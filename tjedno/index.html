@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registar · Atlas faktora · tjedno</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10); --wash: rgba(11,11,11,0.04);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --accent: #2a78d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10); --wash: rgba(255,255,255,0.05);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --accent: #3987e5;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { margin: 0 auto; padding: 0 20px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; overflow-wrap: anywhere; }
+h2 { font-size: 15px; margin: 0 0 2px; font-weight: 650; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.sub { color: var(--ink-2); margin: 0 0 16px; }
+.note { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; color: var(--ink-2); margin: 0 0 16px; }
+select, input[type=search] { font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 8px; margin: 0 0 16px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.tile .l { color: var(--ink-2); font-size: 12px; }
+.tile .v { font-size: 20px; font-weight: 650; margin-top: 2px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+.filters input[type=search] { flex: 1 1 220px; min-width: 160px; }
+.count { color: var(--ink-2); margin-left: auto; }
+.tablewrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  overflow: auto; max-height: calc(100vh - 120px); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--grid); }
+th { position: sticky; top: 0; background: var(--surface); color: var(--ink-2); font-weight: 600;
+  font-size: 12px; user-select: none; z-index: 1; }
+tr.grp th { height: 26px; padding-top: 4px; padding-bottom: 4px; text-align: left; color: var(--ink); border-bottom: 0; }
+tr.grp th.sep, tr.cols th.sep, td.sep { border-left: 1px solid var(--grid); }
+tr.cols th { top: 26px; cursor: pointer; }
+tr.cols th:hover { color: var(--ink); }
+th.l, td.l { text-align: left; }
+tbody tr:hover { background: var(--wash); }
+td.strong { font-weight: 650; }
+td.dim { color: var(--muted); }
+.chip { display: inline-block; min-width: 22px; text-align: center; padding: 0 6px; border-radius: 10px;
+  border: 1px solid var(--border); font-size: 12px; font-weight: 600; }
+.chip.top { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.meta { color: var(--ink-2); margin: 0 0 14px; overflow-wrap: anywhere; }
+.meta b { color: var(--ink); font-weight: 600; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 560px), 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+.card p { color: var(--ink-2); font-size: 12.5px; margin: 0 0 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); margin: 0 0 4px; }
+.legend i, .sw { display: inline-block; width: 12px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+.legend i.sq { height: 10px; width: 10px; }
+svg { display: block; width: 100%; overflow: visible; }
+svg text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.empty { color: var(--muted); padding: 30px 0; text-align: center; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; font-size: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.14); display: none; font-variant-numeric: tabular-nums; }
+#tip .h { color: var(--ink-2); margin-bottom: 2px; }
+#tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+#tip .r { display: flex; justify-content: space-between; gap: 14px; }
+.small { width: 100%; }
+.small td, .small th { cursor: default; position: static; padding: 6px 7px; }
+#t-size { overflow-x: auto; }
+#detail .factor-intro { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:center; gap:clamp(18px,4vw,64px); margin:12px 0 18px; }
+#detail .factor-intro h1 { overflow-wrap:anywhere; font-size:clamp(19px,1.75vw,29px); }
+#detail .factor-intro h1.editorial-title { font:500 clamp(26px,2.4vw,38px)/1.12 Georgia,serif; letter-spacing:-.025em; }
+#detail .factor-code { margin:0 0 5px; color:var(--muted); font:12px/1.5 Consolas,monospace; overflow-wrap:anywhere; }
+#detail .factor-description { max-width:70ch; margin:8px 0 0; font-size:15px; line-height:1.52; color:var(--ink-2); }
+#detail .formula-panel { min-width:0; padding:12px 18px 15px; background:var(--wash); border-radius:8px; }
+#detail .formula-panel h2,#detail .signal-origin h2 { margin:0 0 7px; color:var(--ink); font-family:inherit; font-weight:600; font-size:14px; line-height:1.4; letter-spacing:normal; }
+#detail .formula-panel h2 { color:var(--accent); }
+#detail .equation { font:500 clamp(15px,1.22vw,19px)/1.4 Georgia,serif; color:var(--ink); overflow-wrap:anywhere; }
+#detail .quotient { display:inline-grid; max-width:100%; text-align:center; vertical-align:middle; }
+#detail .quotient span { padding:2px .35em; }
+#detail .quotient .denominator { border-top:1px solid currentColor; }
+#detail .signal-origin { margin:0 0 14px; }
+#detail .origin-fields { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px clamp(18px,3vw,50px); margin:0; }
+#detail .origin-fields div { min-width:0; max-width:100%; }
+#detail .origin-fields dt { margin:0 0 2px; color:var(--muted); font-size:12px; }
+#detail .origin-fields dd { margin:0; color:var(--ink); font-size:14px; font-weight:500; overflow-wrap:anywhere; }
+#detail .origin-fields small { display:block; font-size:12px; color:var(--muted); font-weight:400; }
+#detail .origin-source,#detail .result-scope { margin:7px 0; font-size:13px; color:var(--ink-2); }
+#detail .result-scope { margin:10px 0 7px; }
+@media(max-width:760px) {
+  #detail .factor-intro { grid-template-columns:minmax(0,1fr); gap:12px; }
+  #detail .origin-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 16px; }
+  #detail .formula-panel { padding:10px 14px 13px; }
+}
+</style>
+<link rel="stylesheet" href="atlas.css">
+</head>
+<body>
+<header class="mast"><div class="navinner"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>Atlas faktora · tjedno</a><nav aria-label="Glavna navigacija"><a aria-current="page" href="index.html">Registar</a><a href="metodologija.html">Metodologija</a><a href="../finfeatures/index.html">Finfeatures</a></nav></div></header>
+<main>
+  <section class="overview" id="overview" aria-labelledby="registry-title">
+    <div class="intro"><h1 id="registry-title">Registar faktora: tjedni rebalans</h1><p id="listsub"></p><p class="module-note">Tjedni rebalans: portfelj se formira na zadnji dan trgovanja u tjednu (obično petak), ulazi se na prvom sljedećem otvaranju (obično ponedjeljak) i drži do prvog otvaranja nakon idućeg formiranja. Metodologija je ista kao u mjesečnom atlasu, s tjednima umjesto mjeseci: HAC t s četiri laga, godišnji Sharpe s √52, alfa test traži najmanje 260 tjedana. Smjer faktora s naučenim smjerom uči se na tjednim prinosima do kraja 2014., pa se može razlikovati od mjesečnog. Turnover i trošak odnose se na jedan tjedan. Članstvo u indeksima uzima se sa zadnjeg kraja mjeseca. Čisti FMP, grupe po veličini i grupe faktora nisu izračunati za tjedni rebalans.</p><div id="listtiles" class="totals"></div></div>
+    <div class="distribution"><h2>Raspodjela alfa-ocjena</h2><div id="gradebar" aria-hidden="true"></div><div id="gradekey"></div></div>
+  </section>
+  <section id="list">
+    <div class="workspace-title"><h2>Usporedba faktora</h2><span class="count" id="count" role="status"></span></div>
+  </section>
+  <div class="filters" role="group" aria-label="Filtri">
+    <label class="search list-only"><span aria-hidden="true">⌕</span><input type="search" id="q" placeholder="Pronađi faktor, skup ili obitelj…" aria-label="Pretraga faktora"></label>
+    <label>Uzorak
+      <select id="funi">
+        <optgroup label="Indeksi">
+          <option value="r3000" selected>Russell 3000 (IWV)</option>
+          <option value="sp500">S&amp;P 500 (SPY)</option>
+          <option value="r1000">Russell 1000 (IWB)</option>
+          <option value="r2000">Russell 2000 (IWM)</option>
+        </optgroup>
+        <option value="all">Cijeli univerzum</option>
+        <optgroup label="Po veličini">
+          <option value="mega">Mega (&gt; NYSE p80)</option>
+          <option value="large">Large (p50–p80)</option>
+          <option value="small">Small (p20–p50)</option>
+          <option value="micro">Micro (p1–p20)</option>
+          <option value="nano">Nano (&lt; p1)</option>
+        </optgroup>
+      </select>
+    </label>
+    <label class="list-only">Skup podataka<select id="fds"></select></label>
+    <label class="list-only">Razina<select id="flvl" title="Pojedinačni faktori ili jedan test po grupi sličnih faktora (kompozit grupe, odnosno sam faktor ako nema sličnih)"><option value="f">Pojedinačni faktori</option><option value="g">Grupe</option></select></label>
+    <label class="list-only">Grupa<select id="fcl"></select></label>
+    <label class="list-only">Ocjena<select id="fgr"><option value="">Sve ocjene</option><option>A</option><option>B</option><option>C</option><option>D</option><option value="none">Bez ocjene</option></select></label>
+    <label class="list-only">t-statistika<select id="ft"><option value="0">Sve t-vrijednosti</option><option value="2">t ≥ 2</option><option value="3">t ≥ 3</option></select></label>
+    <label>Razdoblje
+      <select id="fper">
+        <option value="grade">Ocjenski uzorak</option>
+        <option value="all">Cijelo razdoblje</option>
+        <option value="2007-2014">2007.–2014.</option>
+        <option value="2015-2019">2015.–2019.</option>
+        <option value="2020-2024">2020.–2024.</option>
+        <option value="last5">Zadnjih 5 godina</option>
+        <option value="custom">Prilagođeno…</option>
+      </select>
+    </label>
+    <span id="custom" hidden><select id="fy0" aria-label="Od godine"></select> – <select id="fy1" aria-label="Do godine"></select></span>
+    <label>Strana
+      <select id="fside">
+        <option value="ls">Long − short</option>
+        <option value="long">Samo long</option>
+        <option value="short">Samo short</option>
+      </select>
+    </label>
+    <label>Rebalans<select id="freb" title="Učestalost rebalansa portfelja; svaka ima svoju tablicu"><option value="../index.html">Mjesečno</option><option value="" selected>Tjedno</option></select></label>
+    <button id="reset-filters" type="button">Poništi sve filtre</button>
+  </div>
+  <p class="note" id="ctxnote" hidden></p>
+  <section id="results" aria-label="Rezultati usporedbe">
+    <div class="methods" aria-label="Prikaz stupaca" role="group" id="views">
+      <button type="button" value="all">Sve metode</button>
+      <button type="button" value="summary" hidden>Sažetak</button>
+      <button type="button" value="sort">Portfelji</button>
+      <button type="button" value="ic">IC i regresija</button>
+      <button type="button" value="barra">Barra</button>
+    </div>
+    <div class="tablewrap" tabindex="0" aria-label="Tablica faktora"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+    <div class="pager"><span id="pages"></span><div><button id="prev" type="button">← Prethodna</button> <button id="next" type="button">Sljedeća →</button></div></div>
+  </section>
+  <section id="detail" hidden></section>
+</main>
+<div id="tip"></div>
+<script src="data/status.js"></script>
+<script src="data/summary.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const A = v => Array.isArray(v) ? v : (v == null ? [] : [v]);
+const num = (x, d = 2) => x == null || !isFinite(x) ? '–'
+  : Number(x).toLocaleString('hr-HR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (x, d = 2) => x == null || !isFinite(x) ? '–' : num(x * 100, d) + ' %';
+const dateLabel = ms => new Date(ms).toISOString().slice(0, (window.FS_SUMMARY && FS_SUMMARY.meta.period || {}).unit === 'week' ? 10 : 7);
+
+if (!window.FS_SUMMARY) {
+  $('#list').innerHTML = '<p class="note">Nedostaje <code>data/summary.js</code>. Pokreni <code>Rscript scripts/build_factor_site.R</code>.</p>';
+  return;
+}
+const META = FS_SUMMARY.meta, ROWS = FS_SUMMARY.factors;
+const gradeScope = ROWS.some(r => r.grade_universe === 'r3000' ||
+  (r.bh_q_all != null && r.bh_q != null && r.bh_q !== r.bh_q_all))
+  ? 'Russell 3000 (IWV)' : 'cijeli univerzum';
+ROWS.forEach(r => { r.barra_bps = r.barra_mean == null ? null : r.barra_mean * 1e4; });
+const BYKEY = new Map(ROWS.map(r => [r.key, r]));
+const SIZES = [['mega', 'Mega'], ['large', 'Large'], ['small', 'Small'], ['micro', 'Micro'], ['nano', 'Nano']];
+const UNIVERSES = [['sp500', 'S&P 500'], ['r1000', 'Russell 1000'], ['r2000', 'Russell 2000'], ['r3000', 'Russell 3000']];
+const SIZE_LABEL = Object.fromEntries(SIZES.concat(UNIVERSES)), isUniverse = g => UNIVERSES.some(u => u[0] === g);
+// Period of the series (months unless the build says otherwise, e.g. weeks).
+const PER = META.period || {}, PPY = PER.per_year || 12, MIN_MONTHS = PER.min_view || 12, HAC_LAG = PER.hac_lag || 6, ROLL = PER.roll || 12;
+
+/* ---------- lazy data: month panel and size-group series ---------- */
+let PANEL = null, panelP = null;
+const SIZE = {}, sizeP = {};
+function loadScript(src) {
+  return new Promise(res => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => { s.remove(); res(true); };
+    s.onerror = () => { s.remove(); res(false); };
+    document.head.appendChild(s);
+  });
+}
+window.__FS_PANEL = (dates, series) => { PANEL = { ms: dates.map(d => Date.parse(d)), ...series }; };
+window.__FS_SIZE = (name, series) => { SIZE[name] = { g: {}, t: {}, ic: null, pic: null, ...series }; };
+const needPanel = () => panelP || (panelP = loadScript('data/panel.js'));
+const needSize = g => sizeP[g] || (sizeP[g] = loadScript('data/size_' + g + '.js'));
+
+/* ---------- statistics for the selected period / size ---------- */
+const filterDefaults = { q: '', ds: '', lvl: 'f', cl: '', gr: '', t: 0, per: 'grade', y0: 2007, y1: 2024, size: 'r3000', side: 'ls' };
+// A sample without a data file in this build is not offered; without the default
+// sample the page opens on the whole universe.
+const SAMPLES = (window.FS_STATUS || {}).samples;
+if (Array.isArray(SAMPLES)) {
+  for (const o of [...$('#funi').options]) if (o.value !== 'all' && !SAMPLES.includes(o.value)) o.remove();
+  for (const g of [...$('#funi').querySelectorAll('optgroup')]) if (!g.children.length) g.remove();
+  if (!SAMPLES.includes(filterDefaults.size)) filterDefaults.size = 'all';
+}
+const state = { ...filterDefaults, sort: 't', dir: -1, page: 1, view: 'all' };
+// With cluster composites the statistics are always recomputed from the panel: the summary
+// columns of a composite cover its whole history, not its grading window.
+let hasComposites = null;
+const isDynamic = () => state.per !== 'grade' || state.size !== 'all' || state.side !== 'ls' ||
+  (hasComposites ??= ROWS.some(r => r.is_composite));
+
+function rangeFor(r) {
+  const p = state.per;
+  if (p === 'grade') return r.grade_start && r.grade_end ? [Date.parse(r.grade_start), Date.parse(r.grade_end)] : null;
+  if (p === 'all') return [-Infinity, Infinity];
+  if (p === 'last5') {
+    const end = PANEL.ms[PANEL.ms.length - 1], d = new Date(end);
+    return [Date.UTC(d.getUTCFullYear() - 5, d.getUTCMonth(), d.getUTCDate() + 1), end];
+  }
+  const [a, b] = p === 'custom' ? [state.y0, state.y1] : p.split('-').map(Number);
+  return [Date.UTC(a, 0, 1), Date.UTC(b, 11, 31)];
+}
+function slice(series, range, scale) {
+  const out = [];
+  if (!series || !range) return out;
+  for (let i = 0; i < series.v.length; i++) {
+    const v = series.v[i], t = PANEL.ms[series.s + i];
+    if (v != null && t >= range[0] && t <= range[1]) out.push(v / scale);
+  }
+  return out;
+}
+// Newey–West mean test; mirrors hac_mean_values() in R/statistics.R.
+function hac(x, lag = HAC_LAG) {
+  const n = x.length;
+  if (n < 3) return { n, mean: null, t: null, sd: null };
+  const mean = x.reduce((a, b) => a + b, 0) / n, e = x.map(v => v - mean);
+  let lrv = e.reduce((a, b) => a + b * b, 0) / n;
+  const sd = Math.sqrt(lrv * n / (n - 1)), L = Math.min(lag, n - 2);
+  for (let k = 1; k <= L; k++) {
+    let ac = 0;
+    for (let i = k; i < n; i++) ac += e[i] * e[i - k];
+    lrv += 2 * (1 - k / (L + 1)) * ac / n;
+  }
+  const se = Math.sqrt(Math.max(0, lrv / (n - 1)));
+  return { n, mean, t: se > 0 ? mean / se : null, sd };
+}
+const statCache = new Map();
+// Group level: one test per group of similar factors, with its own BH/BY family.
+const lvRow = r => state.lvl !== 'g' ? r
+  : (r._g || (r._g = { ...r, grade: r.grade_grp ?? null, bh_q: r.bh_q_grp ?? null, by_q: r.by_q_grp ?? null, rw_p: r.rw_p_grp ?? null }));
+const inLevel = r => state.cl ? r.cluster_id === state.cl
+  : state.lvl === 'g' ? (r.is_composite || !(r.cluster_n > 1)) : !r.is_composite;
+function viewRow(r) {
+  r = lvRow(r);
+  if (!isDynamic() && !r.is_composite) return r;
+  const ck = [state.per, state.y0, state.y1, state.size, state.side, state.lvl].join('|');
+  if (!statCache.has(ck)) statCache.set(ck, new Map());
+  const cache = statCache.get(ck);
+  if (cache.has(r.key)) return cache.get(r.key);
+  const o = { ...r, mean: null, t: null, sharpe_annual: null, volatility: null, n: null, mean_turnover: null, mean_net_25bps: null,
+    ic_t: null, partial_ic_t: null, fmp_mean: null, fmp_t: null, fmp_sharpe: null, fmp_n: null, fmp_turnover: null, fmp_net_25bps: null };
+  const fmbIn = r['fmb_t_' + state.size];
+  if (fmbIn != null) { o.fmb_t = fmbIn; o.fmb_in_group = true; }
+  const range = rangeFor(r), all = state.size === 'all';
+  // FF5 + momentum alpha exists for the whole universe and for each index run (grading window).
+  for (const f of ['ff6_alpha', 'ff6_alpha_t', 'ff6_r2', 'fmp_ff6_alpha', 'fmp_ff6_alpha_t'])
+    o[f] = all ? (r[f] ?? null) : (r[f + '_' + state.size] ?? null);
+  const sz = all ? null : SIZE[state.size], avg = x => x.reduce((a, b) => a + b, 0) / x.length;
+  const g = slice((all ? PANEL.g : sz.g)[r.key], range, 1e5);
+  if (g.length >= MIN_MONTHS) {
+    const s = hac(g);
+    o.volatility = s.sd;
+    o.n = s.n; o.mean = s.mean; o.t = s.t; o.sharpe_annual = s.sd > 0 ? s.mean / s.sd * Math.sqrt(PPY) : null;
+    if (all) {
+      const net = slice(PANEL.n[r.key], range, 1e5);
+      if (net.length === g.length) {
+        o.mean_net_25bps = avg(net);
+        o.mean_turnover = (o.mean - o.mean_net_25bps) / 0.0025;
+      }
+    } else {
+      const to = slice(sz.t[r.key], range, 1e4);
+      if (to.length === g.length) { o.mean_turnover = avg(to); o.mean_net_25bps = o.mean - 0.0025 * o.mean_turnover; }
+    }
+  }
+  // One side of the sort: the leg's own return, and its excess over the market
+  // signed so that long side + short side = long-short. Statistics use the excess.
+  const src = all ? PANEL : sz;
+  if (state.side !== 'ls') {
+    o.n = o.mean = o.t = o.sharpe_annual = o.volatility = o.mean_turnover = o.mean_net_25bps = o.excess = null;
+    const long = state.side === 'long', leg = ((long ? src.gl : src.gs) || {})[r.key];
+    const mk = PANEL.mk && PANEL.mk[all ? 'all' : state.size], lt = ((long ? src.tl : src.ts) || {})[r.key];
+    if (leg && mk && range) {
+      const raw = [], ex = [], to = [], sg = long ? 1 : -1;
+      for (let i = 0; i < leg.v.length; i++) {
+        const j = leg.s + i, t = PANEL.ms[j], v = leg.v[i], m = mk.v[j - mk.s];
+        if (v != null && m != null && t >= range[0] && t <= range[1]) {
+          raw.push(v / 1e5); ex.push(sg * (v - m) / 1e5);
+          const tv = lt ? lt.v[j - lt.s] : null; if (tv != null) to.push(tv / 1e4);
+        }
+      }
+      if (ex.length >= MIN_MONTHS) {
+        const s = hac(ex);
+        o.volatility = s.sd;
+        o.n = s.n; o.mean = avg(raw); o.excess = s.mean; o.t = s.t;
+        o.sharpe_annual = s.sd > 0 ? s.mean / s.sd * Math.sqrt(PPY) : null;
+        if (to.length === ex.length) { o.mean_turnover = avg(to); o.mean_net_25bps = s.mean - 0.0025 * o.mean_turnover; }
+      }
+    }
+  }
+  const stat = (s, scale) => { const x = slice(s, range, scale); return x.length >= MIN_MONTHS ? hac(x).t : null; };
+  if (src.ic) { o.ic_t = stat(src.ic[r.key], 1e4); o.partial_ic_t = stat((src.pic || {})[r.key], 1e4); }
+  // Pure FMP held for one month (re-estimated inside the group when one is selected);
+  // without an alpha grading window the default period covers its whole history.
+  const mr = range || (state.per === 'grade' ? [-Infinity, Infinity] : null);
+  const m = slice((src.m || {})[r.key], mr, 1e5);
+  if (m.length >= MIN_MONTHS) {
+    const s = hac(m), to = slice((src.mt || {})[r.key], mr, 1e4);
+    o.fmp_mean = s.mean; o.fmp_t = s.t; o.fmp_n = s.n;
+    o.fmp_sharpe = s.sd > 0 ? s.mean / s.sd * Math.sqrt(PPY) : null;
+    if (to.length === m.length) { o.fmp_turnover = avg(to); o.fmp_net_25bps = s.mean - 0.0025 * o.fmp_turnover; }
+  }
+  cache.set(r.key, o);
+  return o;
+}
+async function ensureData() {
+  if (!isDynamic()) return;
+  await needPanel();
+  if (state.size !== 'all') await needSize(state.size);
+}
+const contextNoteElement = $('#ctxnote');
+function contextNote() {
+  const el = contextNoteElement;
+  if (!isDynamic()) { el.hidden = true; return; }
+  const szIc = state.size !== 'all' && SIZE[state.size] && SIZE[state.size].ic;
+  const parts = ['Prinos, t, Sharpe, turnover i neto prinos' + ', IC i Barra' +
+    ' računaju se za odabrani uzorak (najmanje 52 tjedna). Alfa ocjena, BH q, RW p i BY q koriste ocjensko razdoblje (' + gradeScope + '). ' + ((META.within_universes || []).includes(state.size) ? 'FMB t procijenjen je unutar indeksa.' : 'FMB t koristi cijeli univerzum.')];
+  if (state.side !== 'ls') parts.push(`Strana <b>${state.side === 'long' ? 'long' : 'short'}</b>: „Prinos noge" je prosječni tjedni prinos dionica u ${state.side === 'long' ? 'long' : 'short'} nozi JKP tercilnog sorta${state.side === 'short' ? ' (niži je bolji za short)' : ''}. „Višak nad tržištem" je ${state.side === 'long' ? 'long noga − tržište' : 'tržište − short noga'} (vrijednosno ponderirani univerzum), pa long i short strana zajedno daju long-short prinos; HAC t i Sharpe odnose se na taj višak. Turnover je jednosmjerni turnover te noge, a neto je višak umanjen za 25 bps po jedinici turnovera. IC i Barra stupci ne ovise o strani.`);
+  if (isUniverse(state.size) && (META.within_universes || []).includes(state.size)) parts.push(`Univerzum <b>${SIZE_LABEL[state.size]}</b>: zaseban sort unutar indeksa. Univerzum su članovi indeksa na datum formiranja (sastav ETF-a, podudaranje po trajnom identifikatoru), a granice tercila, težine i IC određeni su samo na njima. Mjera veličine je težina u ETF-u, koju tržišna kapitalizacija smije pomaknuti samo unutar intervala zaokruživanja. Faktor se trguje u smjeru iz cijelog univerzuma. Podaci o sastavu počinju u lipnju 2009. ${(META.within_fmp || []).includes(state.size) ? 'Čisti FMP procijenjen je na istim članovima indeksa.' : 'Čisti FMP još je procijenjen na članovima podudarenima po tickeru.'}`);
+  else if (isUniverse(state.size)) parts.push(`Univerzum <b>${SIZE_LABEL[state.size]}</b>: long-short portfelj JKP tercila ograničen na članove indeksa na datum formiranja (sastav ETF-a, podudaranje po tickeru), obje noge renormalizirane, najmanje 5 dionica po nozi. Tercili su i dalje određeni na cijelom univerzumu, pa je ovo dekompozicija postojećeg portfelja, ne zaseban sort unutar indeksa. Podaci o sastavu počinju u lipnju 2009. Tržište za noge je vrijednosno ponderirani prinos članova indeksa. IC i čisti FMP procijenjeni su samo na članovima indeksa.`);
+  else if (state.size !== 'all') parts.push(`Veličina <b>${SIZE_LABEL[state.size]}</b>: long-short portfelj JKP tercila ograničen na dionice te grupe (NYSE percentili tržišne kapitalizacije na datum formiranja), obje noge renormalizirane, najmanje 5 dionica po nozi. Tercili su i dalje određeni na cijelom univerzumu. ${szIc ? 'IC, partial IC i čisti FMP procijenjeni su samo na dionicama te grupe.' : 'IC i FMP po grupi nisu dostupni u ovoj verziji podataka.'} Grupe s manje od 100 dionica nemaju FMP.`);
+  if (state.per !== 'grade') parts.push('Faktorima s naučenim smjerom smjer je određen na uzorku do kraja 2014., pa su njihovi rezultati prije 2015. in-sample.');
+  el.innerHTML = parts.join(' '); el.hidden = false;
+}
+
+/* ---------- list view ---------- */
+const GROUPS = { id: 'Identitet faktora', sort: 'Sorting · JKP tercili, long-short portfelj', ic: 'IC i regresija', barra: 'Barra · čisti FMP držan tjedan dana, $1 long / $1 short' };
+const shortGroups = { ...GROUPS, sort: 'Portfelji · JKP tercili', barra: 'Barra · tjedni FMP' };
+const COLS = [
+  { k: 'feature', grp: 'id', label: 'Faktor', left: true, text: true },
+  { k: 'dataset', grp: 'id', label: 'Dataset', left: true, text: true },
+  { k: 'economic_family', grp: 'id', label: 'Obitelj', left: true, text: true },
+  { k: 'cluster_txt', grp: 'id', label: 'Grupa', left: true, text: true, title: 'Grupa faktora sličnih prinosa (korelacija tjednih sort prinosa iznad 0,90 na podacima do 2014.) i broj članova. Prazno = faktor nije sličan nijednom drugom.' },
+  { k: 'data_txt', grp: 'id', label: 'Podaci', left: true, text: true, title: 'Raspon tjedana formiranja za koje signal ima rezultat (sort na cijelom univerzumu, inače čisti FMP) i broj tjedana u zagradi. Alfa test i ocjena traže najmanje 260 tjedana; faktori s kraćom poviješću imaju samo Barra rezultate.' },
+  { k: 'resolved_direction', grp: 'id', label: 'Smjer', left: true, text: true, title: 'Smjer trgovanja: higher = long visoke vrijednosti' },
+  { k: 'grade', grp: 'id', label: 'Alfa', left: true, text: true, title: 'Alfa ocjena u ocjenskom razdoblju (' + gradeScope + ')' },
+  { k: 'mean', grp: 'sort', label: 'Prinos tj.', legLabel: 'Prinos noge', f: v => pct(v), title: 'Prosječni tjedni long-short prinos; uz odabranu stranu prinos same noge' },
+  { k: 'excess', grp: 'sort', label: 'Višak nad tržištem', leg: true, f: v => pct(v), title: 'Long: noga − tržište. Short: tržište − noga. Zbroj dviju strana je long-short prinos.' },
+  { k: 't', grp: 'sort', label: 'HAC t', f: v => num(v), strong: 3 },
+  { k: 'sharpe_annual', grp: 'sort', label: 'Sharpe', f: v => num(v) },
+  { k: 'n', grp: 'sort', label: 'Tj.', f: v => num(v, 0), title: 'Broj tjedana u uzorku' },
+  { k: 'mean_turnover', grp: 'sort', label: 'Turnover', f: v => num(v), title: 'Prosječni jednosmjerni tjedni turnover' },
+  { k: 'mean_net_25bps', grp: 'sort', label: 'Neto 25 bps', f: v => pct(v) },
+  { k: 'bh_q', grp: 'sort', lsOnly: true, label: 'BH q', f: v => num(v, 3), fixed: true, title: 'Benjamini–Hochberg prilagođena p-vrijednost u ocjenskom razdoblju (' + gradeScope + '). A = q ≤ 0,05 i t ≥ 3, B = q ≤ 0,10 i t ≥ 2, C = t ≥ 1,5.' },
+  { k: 'rw_p', grp: 'sort', lsOnly: true, label: 'RW p', f: v => num(v, 3), fixed: true, title: 'Romano–Wolf step-down p-vrijednost jednostranog testa (prosjek > 0) u ocjenskom razdoblju (' + gradeScope + '). Blok-bootstrap tjedana zajednički za sve faktore iste razine, pa uzima u obzir njihovu međusobnu korelaciju. Kontrolira vjerojatnost ijednog lažnog otkrića (FWER), stroža je od BH q; ne ulazi u ocjenu.' },
+  { k: 'by_q', grp: 'sort', lsOnly: true, label: 'BY q', f: v => num(v, 3), fixed: true, title: 'Benjamini–Yekutieli prilagođena p-vrijednost (stroža granica, vrijedi uz proizvoljnu zavisnost testova); ne ulazi u ocjenu' },
+  { k: 'ic_t', grp: 'ic', label: 'IC t', f: v => num(v), strong: 3, title: 'Spearman rank IC, 1 tjedan unaprijed' },
+  { k: 'partial_ic_t', grp: 'ic', label: 'Partial IC t', f: v => num(v), strong: 3, title: 'IC uz kontrolu veličine, bete, momentuma, rez. volatilnosti, likvidnosti i industrije' },
+  { k: 'fmb_t', grp: 'ic', label: 'FMB t', f: v => num(v), strong: 3, fixed: true, title: 'Fama–MacBeth premija, cijeli ocjenski uzorak' },
+  { k: 'ff6_alpha_t', grp: 'ic', label: 'FF6 α t', f: v => num(v), strong: 3, fixed: true, title: 'Newey–West t alfe iz regresije tjednog long-short prinosa na Fama–French pet faktora i momentum (Mkt−RF, SMB, HML, RMW, CMA, MOM) u ocjenskom razdoblju. Pokazuje dio prinosa koji tih šest faktora ne objašnjava. Postoji za cijeli univerzum i za indekse.' },
+  { k: 'fmp_mean', grp: 'barra', label: 'Prinos tj.', f: v => pct(v), title: 'Čisti factor-mimicking portfelj (neutralan na tržište, osam stilova i industrije), formiran na kraju tjedna, ulaz na sljedećem otvaranju, držan do prvog otvaranja nakon idućeg tjedna; skaliran na $1 long / $1 short i poravnat sa smjerom trgovanja' },
+  { k: 'fmp_t', grp: 'barra', label: 'HAC t', f: v => num(v), strong: 3, title: 'Newey–West t tjednog prinosa čistog FMP-a (4 laga)' },
+  { k: 'fmp_ff6_alpha_t', grp: 'barra', label: 'FF6 α t', f: v => num(v), strong: 3, fixed: true, only: true, title: 'Newey–West t alfe čistog FMP-a prema Fama–French pet faktora i momentumu, ocjensko razdoblje' },
+  { k: 'fmp_sharpe', grp: 'barra', label: 'Sharpe', f: v => num(v), title: 'Godišnji Sharpe tjednih prinosa čistog FMP-a (√52)' },
+  { k: 'fmp_turnover', grp: 'barra', label: 'Turnover', f: v => num(v), only: true, title: 'Prosječni jednosmjerni tjedni turnover $1/$1 portfelja, uz drift' },
+  { k: 'fmp_net_25bps', grp: 'barra', label: 'Neto 25 bps', f: v => pct(v) },
+  { k: 'fmp_n', grp: 'barra', label: 'Tj.', f: v => num(v, 0), only: true },
+  { k: 'barra_t', grp: 'barra', label: 't 1 dan', f: v => num(v), only: true, fixed: true, title: 'Stari screening iz pipelinea: prinos samo sljedećeg dana nakon kraja tjedna, sirova izloženost, cijela povijest. Nije mjera strategije.' },
+  { k: 'risk_grade', grp: 'barra', label: 'Risk ocjena', left: true, text: true, only: true },
+];
+const PAGE_SIZE = 40;
+const summaryKeys = ['feature', 'grade', 'mean', 'excess', 't', 'sharpe_annual', 'mean_net_25bps', 'ic_t', 'fmp_t'];
+// A build without a pure FMP (e.g. the weekly one) shows no Barra columns.
+const HAS_FMP = ROWS.some(r => r.fmp_t != null);
+const visibleCols = () => (state.view === 'summary'
+  ? COLS.filter(c => summaryKeys.includes(c.k) && (!c.leg || state.side !== 'ls'))
+  : COLS.filter(c => (state.side === 'ls' ? !c.leg : !c.lsOnly) && (c.grp === 'id' || (state.view === 'all' ? !c.only : c.grp === state.view)))).filter(c => HAS_FMP || c.grp !== 'barra');
+
+function initList() {
+  const tested = ROWS.filter(r => r.alpha_tested && !r.is_composite);
+  // The distribution follows the chosen level (individual factors or groups).
+  const gradeBars = () => {
+    const pool = ROWS.filter(r => state.lvl === 'g' ? (r.is_composite || !(r.cluster_n > 1)) : !r.is_composite).map(lvRow);
+    const graded = pool.filter(r => r.alpha_tested);
+    return ['A','B','C','D','none'].map(grade => ({
+      grade, count: grade === 'none' ? pool.length - graded.length : graded.filter(r => r.grade === grade).length,
+      label: grade === 'none' ? 'Bez ocjene' : grade
+    }));
+  };
+  $('#listsub').textContent = (META.universe_mode === 'exploratory' ? 'Eksploratorni uzorak' : META.universe_mode) + ' · Metodologija ' + META.methodology_version + ' · Ažurirano ' + META.generated.slice(0,10).split('-').reverse().join('.') + '.';
+  const formatCount = value => num(value, 0);
+  $('#listtiles').innerHTML = [
+    ['Faktori', ROWS.length], ['S alfa-ocjenom', tested.length],
+    ['S tjednim FMP t', ROWS.filter(r => r.fmp_t != null).length]
+  ].filter(([label]) => HAS_FMP || !label.includes('FMP')).map(([label, value]) => `<div><strong>${formatCount(value)}</strong><span>${label}</span></div>`).join('');
+  const renderGradeBar = initList.bar = () => {
+  const bars = gradeBars();
+  $('#gradebar').innerHTML = bars.filter(b => b.count).map(b =>
+    `<i class="grade-${b.grade}" style="flex:${b.count}"></i>`).join('');
+  $('#gradekey').innerHTML = '<button type="button" data-grade="" aria-label="Sve ocjene">Sve</button>' + bars.map(b =>
+    `<button type="button" data-grade="${b.grade}" aria-label="Filtriraj: ${b.label} (${b.count})"><span><i class="grade-${b.grade}"></i>${b.label}</span><strong>${formatCount(b.count)}</strong></button>`).join('');
+  };
+  renderGradeBar();
+  $('#gradekey').onclick = e => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    $('#fgr').value = state.gr === button.dataset.grade ? '' : button.dataset.grade;
+    $('#fgr').dispatchEvent(new Event('change'));
+  };
+  $('#views').onclick = e => {
+    const button = e.target.closest('button');
+    if (button) { state.view = button.value; state.page = 1; renderList(); }
+  };
+  const turnPage = delta => { state.page += delta; renderList(); $('.tablewrap').scrollTop = 0; };
+  $('#prev').onclick = () => turnPage(-1);
+  $('#next').onclick = () => turnPage(1);
+  const dss = [...new Set(ROWS.map(r => r.dataset))].sort();
+  $('#fds').innerHTML = '<option value="">Svi skupovi podataka</option>' + dss.map(d => `<option>${esc(d)}</option>`).join('');
+  $('#tbl thead').addEventListener('click', e => {
+    const th = e.target.closest('tr.cols th'); if (!th) return;
+    const k = th.dataset.k;
+    if (state.sort === k) state.dir = -state.dir;
+    else { state.sort = k; state.dir = COLS.find(c => c.k === k).text ? 1 : -1; }
+    state.page = 1; renderList();
+  });
+  $('#q').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); state.page = 1; renderList(); });
+  $('#fds').addEventListener('change', e => { state.ds = e.target.value; state.page = 1; renderList(); });
+  const cls = new Map();
+  ROWS.forEach(r => { if (r.cluster_n > 1 && r.cluster_id) cls.set(r.cluster_id, `${r.cluster_id} · ${r.cluster_label} (${r.cluster_n})`); });
+  $('#fcl').innerHTML = '<option value="">Sve grupe</option>' + [...cls].sort((a, b) => a[0] < b[0] ? -1 : 1).map(([id, name]) => `<option value="${esc(id)}">${esc(name)}</option>`).join('');
+  $('#fcl').closest('label').hidden = $('#flvl').closest('label').hidden = !cls.size;
+  $('#flvl').addEventListener('change', e => { state.lvl = e.target.value; state.page = 1; initList.bar(); renderList(); });
+  $('#fcl').addEventListener('change', e => { state.cl = e.target.value; state.page = 1; renderList(); });
+  $('#fgr').addEventListener('change', e => { state.gr = e.target.value; state.page = 1; renderList(); });
+  $('#ft').addEventListener('change', e => { state.t = +e.target.value; state.page = 1; renderList(); });
+  // Rebalancing frequency: each one is a separate build of this page.
+  if (!HAS_FMP) $('#views button[value="barra"]').hidden = true;
+  const reb = $('#freb'); if (reb) reb.addEventListener('change', e => { if (e.target.value) location.href = e.target.value; });
+}
+
+async function renderList() {
+  contextNote();
+  const allMethods = state.view === 'all';
+  $('#tbl').classList.toggle('all-methods', allMethods);
+  $('#views').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.value === state.view));
+  $('#gradekey').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.grade === state.gr));
+  if (isDynamic() && (!PANEL || (state.size !== 'all' && !SIZE[state.size]))) {
+    $('#count').textContent = 'Učitavam…';
+    await ensureData(); contextNote();
+    if (isDynamic() && (!PANEL || (state.size !== 'all' && !SIZE[state.size]))) {
+      $('#tbl tbody').innerHTML = '<tr><td class="l dim">Podaci za ovaj odabir nisu izgrađeni. Pokreni <code>scripts/build_size_group_returns.R</code> pa <code>scripts/build_factor_site.R</code>.</td></tr>';
+      $('.pager').hidden = true; $('#tbl thead').innerHTML = ''; $('#count').textContent = ''; return;
+    }
+  }
+  const cols = visibleCols(), dyn = isDynamic();
+  if (!cols.some(c => c.k === state.sort)) { state.sort = (cols.find(c => c.strong) || cols[0]).k; state.dir = -1; }
+  const { q, ds, gr, t, sort, dir } = state, tcol = cols.find(c => c.strong).k;
+  const rows = ROWS.filter(r => inLevel(r) &&
+    (!ds || r.dataset === ds) &&
+    (!gr || (gr === 'none' ? !r.alpha_tested : lvRow(r).grade === gr)) &&
+    (!q || (r.feature + ' ' + r.dataset + ' ' + (r.economic_family || '')).toLowerCase().includes(q)))
+    .map(viewRow).filter(r => !t || (r[tcol] != null && r[tcol] >= t));
+  const isText = COLS.find(c => c.k === sort).text;
+  rows.sort((a, b) => {
+    const x = a[sort], y = b[sort];
+    if (x == null && y == null) return 0;
+    if (x == null) return 1;
+    if (y == null) return -1;
+    return dir * (isText ? String(x).localeCompare(String(y)) : x - y);
+  });
+  let grpRow = '', prev = null, span = 0;
+  const flush = () => { if (prev != null) grpRow += `<th colspan="${span}" class="${prev === 'id' ? '' : 'sep'}" title="${GROUPS[prev]}">${allMethods ? shortGroups[prev] : GROUPS[prev]}</th>`; };
+  cols.forEach(c => { if (c.grp !== prev) { flush(); prev = c.grp; span = 0; } span++; }); flush();
+  const first = new Set(cols.filter((c, i) => i > 0 && c.grp !== cols[i - 1].grp).map(c => c.k));
+  $('#tbl thead').innerHTML = `<tr class="grp">${grpRow}</tr><tr class="cols">` + cols.map(c =>
+    `<th scope="col" aria-sort="${c.k === sort ? (dir > 0 ? 'ascending' : 'descending') : 'none'}" data-k="${c.k}" class="${c.left ? 'l' : ''} ${first.has(c.k) ? 'sep' : ''}" title="${esc(c.title || '')}"><button type="button">${state.side !== 'ls' && c.legLabel || (state.view === 'summary' && c.k === 'fmp_t' ? 'FMP t' : c.label)}${dyn && c.fixed ? '*' : ''}${c.k === sort ? (dir > 0 ? ' ▲' : ' ▼') : ''}</button></th>`).join('') + '</tr>';
+  $('#count').textContent = `${rows.length.toLocaleString('hr-HR')} od ${ROWS.length.toLocaleString('hr-HR')}`;
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  state.page = Math.min(state.page, totalPages);
+  $('#pages').textContent = rows.length ? `Stranica ${state.page} od ${totalPages}` : '';
+  $('#prev').disabled = state.page <= 1;
+  $('#next').disabled = state.page >= totalPages;
+  $('.pager').hidden = rows.length <= PAGE_SIZE;
+  $('#tbl').classList.toggle('compact', state.view === 'summary');
+  const start = (state.page - 1) * PAGE_SIZE;
+  $('#tbl tbody').innerHTML = rows.slice(start, start + PAGE_SIZE).map(r => '<tr>' + cols.map(c => {
+    const v = r[c.k], sep = first.has(c.k) ? ' sep' : '';
+    if (c.k === 'feature') return `<td class="l"><a href="#f=${encodeURIComponent(r.key)}">${allMethods ? esc(v).replaceAll('_', '_<wbr>') : esc(v)}</a>${state.view === 'summary' ? `<small>${esc(r.dataset)}</small>` : ''}</td>`;
+    if (c.k === 'grade') return `<td class="l">${v ? `<span class="chip ${v === 'A' || v === 'B' ? 'top' : ''}">${esc(v)}</span>`
+      : `<span class="dim" title="${esc(r.alpha_failure || '')}">${r.alpha_failure ? 'Bez ocjene' : '–'}</span>`}</td>`;
+    if (c.text) return `<td class="l${sep} ${v ? '' : 'dim'}">${esc(v || '–')}</td>`;
+    const strong = c.strong && v != null && Math.abs(v) >= c.strong;
+    return `<td class="${v == null || (dyn && c.fixed && !(c.k === 'fmb_t' && r.fmb_in_group) && !(c.k.endsWith('ff6_alpha_t') && state.per === 'grade')) ? 'dim' : strong ? 'strong' : ''}${sep}">${c.f(v)}</td>`;
+  }).join('') + '</tr>').join('') || `<tr><td class="l dim" colspan="${cols.length}">Nema faktora za zadane filtre.</td></tr>`;
+}
+
+/* ---------- charts ---------- */
+const tip = $('#tip');
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = ev.clientY - h - 14;
+  tip.style.left = Math.max(4, x) + 'px'; tip.style.top = Math.max(4, y) + 'px';
+}
+const hideTip = () => { tip.style.display = 'none'; };
+
+function ticks(lo, hi, n = 5) {
+  if (lo === hi) { lo -= 1; hi += 1; }
+  const raw = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step) out.push(Math.abs(v) < step * 1e-9 ? 0 : v);
+  return { out, step };
+}
+const tickFmt = (v, step, unit) => num(v, step >= 1 ? 0 : step >= 0.1 ? 1 : step >= 0.01 ? 2 : 3) + (unit || '');
+const legend = (series, sq) => series.length < 2 ? '' : '<div class="legend">' + series.map(s =>
+  `<span><i class="${sq ? 'sq' : ''}" style="background:var(${s.color})"></i>${esc(s.name)}</span>`).join('') + '</div>';
+
+function lineChart(host, { series, unit = '', digits = 2, marker }) {
+  series = series.map(s => {
+    const keep = s.x.map((_, i) => s.y[i] != null && isFinite(s.x[i]));
+    return { ...s, x: s.x.filter((_, i) => keep[i]), y: s.y.filter((_, i) => keep[i]) };
+  }).filter(s => s.x.length > 1);
+  if (!series.length) { host.innerHTML = '<div class="empty">Nema podataka za ovaj odabir.</div>'; return; }
+  const W = Math.max(320, host.clientWidth), H = 250, m = { l: 50, r: 14, t: 10, b: 24 };
+  const xs = series.flatMap(s => s.x), ys = series.flatMap(s => s.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const { out: yt, step } = ticks(Math.min(0, ...ys), Math.max(0, ...ys));
+  const y0 = Math.min(yt[0], ...ys), y1 = Math.max(yt[yt.length - 1], ...ys);
+  const X = v => m.l + (v - x0) / (x1 - x0 || 1) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - y0) / (y1 - y0 || 1) * (H - m.t - m.b);
+  const yr0 = new Date(x0).getUTCFullYear() + 1, yr1 = new Date(x1).getUTCFullYear();
+  const every = Math.max(1, Math.ceil((yr1 - yr0 + 1) / Math.max(2, Math.floor((W - m.l - m.r) / 60))));
+  let g = '';
+  for (const v of yt) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(${v === 0 ? '--axis' : '--grid'})"/>` +
+    `<text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${tickFmt(v, step, unit)}</text>`;
+  for (let y = yr0; y <= yr1; y += every) { const px = X(Date.UTC(y, 0, 1)); g += `<text x="${px}" y="${H - 6}" text-anchor="middle">${y}</text>`; }
+  if (marker && marker.x > x0 && marker.x < x1) {
+    const px = X(marker.x), right = px > W - 170;
+    g += `<line x1="${px}" x2="${px}" y1="${m.t}" y2="${H - m.b}" stroke="var(--axis)"/>` +
+      `<text x="${px + (right ? -5 : 5)}" y="${m.t + 10}" text-anchor="${right ? 'end' : 'start'}">${esc(marker.label)}</text>`;
+  }
+  for (const s of series) {
+    const d = s.x.map((v, i) => (i ? 'L' : 'M') + X(v).toFixed(1) + ' ' + Y(s.y[i]).toFixed(1)).join('');
+    g += `<path d="${d}" fill="none" stroke="var(${s.color})" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  g += `<line class="ch" y1="${m.t}" y2="${H - m.b}" stroke="var(--axis)" visibility="hidden"/>` +
+    series.map((s, i) => `<circle class="dot" data-i="${i}" r="4" fill="var(${s.color})" stroke="var(--surface)" stroke-width="2" visibility="hidden"/>`).join('') +
+    `<rect class="hit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent"/>`;
+  host.innerHTML = legend(series) + `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img">${g}</svg>`;
+  const svg = $('svg', host), ch = $('.ch', svg), dots = svg.querySelectorAll('.dot');
+  const nearest = (arr, v) => { let lo = 0, hi = arr.length - 1; while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (arr[mid] < v) lo = mid; else hi = mid; } return v - arr[lo] < arr[hi] - v ? lo : hi; };
+  const longest = series.reduce((a, b) => b.x.length > a.x.length ? b : a);
+  $('.hit', svg).addEventListener('mousemove', ev => {
+    const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * (W / box.width);
+    const tv = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0);
+    const tx = longest.x[nearest(longest.x, tv)];
+    ch.setAttribute('x1', X(tx)); ch.setAttribute('x2', X(tx)); ch.setAttribute('visibility', 'visible');
+    let html = `<div class="h">${dateLabel(tx)}</div>`;
+    series.forEach((s, k) => {
+      const i = nearest(s.x, tx), v = s.y[i], ok = Math.abs(s.x[i] - tx) < 45 * 864e5;
+      dots[k].setAttribute('visibility', ok ? 'visible' : 'hidden');
+      if (ok) { dots[k].setAttribute('cx', X(s.x[i])); dots[k].setAttribute('cy', Y(v)); }
+      html += `<div class="r"><span><i style="background:var(${s.color})"></i>${esc(s.name)}</span><b>${ok ? num(v, digits) + unit : '–'}</b></div>`;
+    });
+    showTip(html, ev);
+  });
+  $('.hit', svg).addEventListener('mouseleave', () => { hideTip(); ch.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); });
+}
+
+function barChart(host, { labels, series, unit = '', digits = 2, xTitle }) {
+  series = series.filter(s => s.values.some(v => v != null));
+  if (!series.length || !labels.length) { host.innerHTML = '<div class="empty">Nema podataka.</div>'; return; }
+  const W = Math.max(320, host.clientWidth), H = 250, m = { l: 50, r: 14, t: 10, b: xTitle ? 40 : 24 };
+  const ys = series.flatMap(s => s.values).filter(v => v != null);
+  const { out: yt, step } = ticks(Math.min(0, ...ys), Math.max(0, ...ys));
+  const y0 = Math.min(yt[0], ...ys), y1 = Math.max(yt[yt.length - 1], ...ys);
+  const Y = v => H - m.b - (v - y0) / (y1 - y0 || 1) * (H - m.t - m.b);
+  const band = (W - m.l - m.r) / labels.length, n = series.length;
+  const bw = Math.max(3, Math.min(24, (band - 10) / n - 2));
+  let g = '';
+  for (const v of yt) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(${v === 0 ? '--axis' : '--grid'})"/>` +
+    `<text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${tickFmt(v, step, unit)}</text>`;
+  labels.forEach((lab, i) => {
+    const cx = m.l + band * (i + 0.5);
+    g += `<text x="${cx}" y="${H - m.b + 15}" text-anchor="middle">${esc(lab)}</text>`;
+    series.forEach((s, k) => {
+      const v = s.values[i]; if (v == null) return;
+      const x = cx - (n * bw + (n - 1) * 2) / 2 + k * (bw + 2), base = Y(0), top = Y(v);
+      const h = Math.abs(top - base), r = Math.min(4, bw / 2, h), e = v >= 0 ? -1 : 1;
+      g += `<path d="M${x} ${base}V${top - e * r}Q${x} ${top} ${x + r} ${top}H${x + bw - r}Q${x + bw} ${top} ${x + bw} ${top - e * r}V${base}Z" fill="var(${s.color})"/>` +
+        `<rect class="bh" x="${x - 1}" y="${m.t}" width="${bw + 2}" height="${H - m.t - m.b}" fill="transparent" data-l="${esc(lab)}" data-s="${esc(s.name)}" data-c="${s.color}" data-v="${num(v, digits) + unit}"/>`;
+    });
+  });
+  if (xTitle) g += `<text x="${(W + m.l - m.r) / 2}" y="${H - 4}" text-anchor="middle">${esc(xTitle)}</text>`;
+  host.innerHTML = legend(series, true) + `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img">${g}</svg>`;
+  host.querySelectorAll('.bh').forEach(el => {
+    el.addEventListener('mousemove', ev => showTip(`<div class="h">${el.dataset.l}</div><div class="r"><span><i style="background:var(${el.dataset.c})"></i>${el.dataset.s}</span><b>${el.dataset.v}</b></div>`, ev));
+    el.addEventListener('mouseleave', hideTip);
+  });
+}
+
+/* ---------- detail view ---------- */
+const cache = new Map();
+let current = null;
+window.__FS_DETAIL = d => { cache.set(d.key, d); };
+async function loadDetail(key) {
+  if (!cache.has(key)) { await loadScript('data/f/' + key + '.js'); if (!cache.has(key)) cache.set(key, null); }
+  return cache.get(key);
+}
+let introRequest;
+function loadDescriptions() {
+  if (!introRequest) {
+    const files = [];
+    if (!window.FS_FACTOR_DESCRIPTIONS) files.push('factor-descriptions.hr.js');
+    if (!window.FS_FACTOR_FORMULAS) files.push('factor-formulas.hr.js');
+    introRequest = Promise.all(files.map(loadScript)).finally(() => { introRequest = null; });
+  }
+  return introRequest;
+}
+function renderFormula(value) {
+  if (!value) return '';
+  const math = Array.isArray(value)
+    ? `<span class="quotient" role="math" aria-label="${esc(value[0])} podijeljeno s ${esc(value[1])}"><span aria-hidden="true">${esc(value[0])}</span><span aria-hidden="true" class="denominator">${esc(value[1])}</span></span>`
+    : esc(value);
+  return `<section class="formula-panel" aria-label="Formula"><h2>Formula</h2><div class="equation">${math}</div></section>`;
+}
+function signalDirection(value) {
+  return ({ unknown:'Nije zadan', higher:'Više vrijednosti', lower:'Niže vrijednosti' })[value] || value || '–';
+}
+function signalDate(value) {
+  if (!value) return '–';
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return match ? `${+match[3]}. ${+match[2]}. ${match[1]}.` : value;
+}
+const ms = arr => A(arr).map(d => Date.parse(d));
+const cum = arr => { let s = 0; return arr.map(v => { s += v == null ? 0 : v; return s * 100; }); };
+function rolling(arr, w = ROLL, min = Math.ceil(ROLL / 2)) {
+  arr = A(arr);
+  return arr.map((_, i) => { const win = arr.slice(Math.max(0, i - w + 1), i + 1).filter(v => v != null);
+    return win.length >= min ? win.reduce((a, b) => a + b, 0) / win.length : null; });
+}
+function clip(x, y, range) {
+  y = A(y);
+  if (!range) return { x, y };
+  const keep = x.map(t => t >= range[0] && t <= range[1]);
+  return { x: x.filter((_, i) => keep[i]), y: y.filter((_, i) => keep[i]) };
+}
+const periodLabel = () => ({ grade: 'ocjenski uzorak', all: 'cijelo razdoblje', last5: 'zadnjih 5 godina',
+  custom: `${state.y0}.–${state.y1}.` }[state.per] || state.per.replace('-', '.–') + '.');
+
+async function showDetail(key) {
+  const base = BYKEY.get(key), el = $('#detail');
+  el.hidden = false; contextNote();
+  if (!current || current.r.key !== key) {
+    current = null;
+    el.innerHTML = '<p role="status">Učitavanje faktora…</p>';
+  }
+  if (!base) { el.innerHTML = '<p class="back"><a href="#">← Registar faktora</a></p><p class="note">Nepoznat faktor.</p>'; return; }
+  const [, d] = await Promise.all([ensureData(), loadDetail(key), loadDescriptions()]);
+  if (location.hash !== '#f=' + encodeURIComponent(key)) return;
+  if (isDynamic() && (!PANEL || (state.size !== 'all' && !SIZE[state.size]))) {
+    el.innerHTML = '<p><a href="#">← Registar</a></p><p class="note">Podaci za odabrani uzorak nisu dostupni.</p>'; return;
+  }
+  const r = viewRow(base);
+  const tile = (l, v) => `<div class="tile"><div class="l">${l}</div><div class="v">${v}</div></div>`;
+  const learned = r.direction_source === 'training_only', dyn = isDynamic();
+  const sideLabel = { ls: 'Long − short', long: 'Long', short: 'Short' }[state.side];
+  const fixed = dyn ? ' (ocjenski uzorak)' : '';
+  const volatility = r.volatility == null ? null : r.volatility * Math.sqrt(PPY);
+  const stat = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
+  const capmIn = base['capm_beta_' + state.size] != null;
+  const uSel = d && d.universe && d.universe[state.size] && d.universe[state.size].dates.length ? d.universe[state.size] : null;
+  const capm = f => capmIn ? base[f + '_' + state.size] : base[f];
+  const intro = window.FS_FACTOR_INTROS?.[key];
+  const introTitle = intro?.title, introText = intro?.description;
+  el.innerHTML = `
+    <div class="factor-heading">
+      <p class="back"><a href="#">← Registar faktora</a></p>
+      <div class="factor-intro">
+        <div>
+          ${introTitle ? `<p class="factor-code">${esc(r.feature)}</p><h1 class="editorial-title">${esc(introTitle)}</h1>` : `<h1>${esc(r.feature)}</h1>`}
+          <p class="factor-description">${esc(introText || window.FS_FACTOR_DESCRIPTIONS?.[key] || 'Opis ovog faktora još nije dostupan.')}</p>
+        </div>
+        ${renderFormula(window.FS_FACTOR_FORMULAS?.[key])}
+      </div>
+      <section class="signal-origin" aria-label="Podaci i porijeklo signala">
+        <h2>Podaci i porijeklo signala</h2>
+        <dl class="origin-fields">
+          <div><dt>Skup podataka</dt><dd>${esc(r.dataset)}</dd></div>
+          <div><dt>Obitelj</dt><dd>${esc(r.economic_family || '–')}</dd></div>
+          <div><dt>Smjer u registru</dt><dd>${esc(signalDirection(r.registry_direction))}</dd></div>
+          <div><dt>Trgovani smjer</dt><dd>${esc(signalDirection(r.resolved_direction))}${learned ? '<small>Naučen na trening-uzorku</small>' : ''}</dd></div>
+          <div><dt>Ocjenski uzorak</dt><dd>${esc(signalDate(r.grade_start))} – ${esc(signalDate(r.grade_end))}</dd></div>
+          ${r.data_txt ? `<div><dt>Raspon podataka</dt><dd>${esc(r.data_start)} – ${esc(r.data_end)} · ${r.data_months} tj.${r.data_months < (PER.min_grade || 60) ? '<small>Kratka povijest: manje od 260 tjedana, bez alfa testa i ocjene</small>' : ''}</dd></div>` : ''}
+          ${r.cluster_n > 1 ? `<div><dt>Grupa sličnih faktora</dt><dd>${esc(r.cluster_id)} · ${esc(r.cluster_label)} (${r.cluster_n})${r.is_composite ? '<small>Kompozit grupe: prosjek z-vrijednosti članova</small>' : ''}</dd></div>` : ''}
+          <div><dt>Status signala</dt><dd>${esc(r.proxy_status || '–')}</dd></div>
+        </dl>
+        ${r.source_mapping || r.has_card ? `<p class="origin-source">${r.source_mapping ? 'Izvor: ' + esc(r.source_mapping) : ''} ${r.has_card ? `<a href="../report/cards/${encodeURIComponent(r.key)}.html">Puna Quarto kartica</a>` : ''}</p>` : ''}
+      </section>
+      <p class="result-scope">Prikaz rezultata · ${periodLabel()} · ${state.size === 'all' ? 'Sve dionice' : SIZE_LABEL[state.size]} · ${sideLabel}</p>
+    </div>
+    ${r.alpha_failure ? `<p class="note">Alfa test nije uspio · <b>${esc(r.alpha_failure)}</b></p>` : ''}
+    ${r.barra_failure ? `<p class="note">Barra test nije uspio · <b>${esc(r.barra_failure)}</b></p>` : ''}
+    <div class="tiles primary-stats">
+      ${tile('Alfa ocjena' + fixed, esc(r.grade || '–'))}
+      ${tile(state.side === 'ls' ? 'Bruto prinos tj.' : 'Prinos noge tj.', pct(r.mean))}
+      ${tile(state.side === 'ls' ? 'Neto tj. · 25 bps' : 'Neto višak tj. · 25 bps', pct(r.mean_net_25bps))}
+      ${tile(state.side === 'ls' ? 'Sharpe (god.)' : 'Sharpe viška (god.)', num(r.sharpe_annual))}
+      ${tile(state.side === 'ls' ? 'Volatilnost (god.)' : 'Volatilnost viška (god.)', pct(volatility))}
+      ${tile(capmIn ? 'Beta L/S · unutar indeksa' : 'Beta L/S · cijela povijest', num(capm('capm_beta'), 3))}
+    </div>
+    <div class="charts lead-charts">
+      <div class="card"><h2>Kumulativni long-short prinos</h2><p>Zbroj tjednih prinosa ${uSel ? 'sorta unutar univerzuma ' + SIZE_LABEL[state.size] : 'za cijeli univerzum'} u odabranom razdoblju. Datumi označavaju formiranje portfelja.</p><div id="c-cum"></div></div>
+      <div class="card"><h2>${uSel && uSel.fmp && !uSel.fmp.simple ? 'Barra · čisti FMP unutar indeksa' : 'Barra · čisti i jednostavni FMP'}</h2><p>Zbroj tjednih prinosa ${uSel && uSel.fmp ? 'unutar univerzuma ' + SIZE_LABEL[state.size] : 'za cijeli univerzum'} u istom razdoblju, uz 1 USD long i 1 USD short. Čisti portfelj neutralizira tržište, osam stilova i industrije.${uSel && uSel.fmp && !uSel.fmp.simple ? '' : ' Jednostavni FMP ima u regresiji samo tržište i kandidata, pa razlika između linija pokazuje koliko prinosa dolazi iz stilova i industrija.'}</p><div id="c-barra"></div></div>
+    </div>
+    <div class="stat-groups">
+      <section><h2>Portfelj</h2><dl>
+        ${stat('Tjedni', num(r.n, 0))}${stat(state.side === 'ls' ? 'HAC t prinosa' : 'HAC t viška', num(r.t))}
+        ${state.side === 'ls' ? '' : stat('Višak nad tržištem tj.', pct(r.excess))}
+        ${stat('Jednosmjerni turnover tj.', num(r.mean_turnover))}
+      </dl></section>
+      <section><h2>Tržišna izloženost · CAPM</h2><dl>
+        ${stat('Beta', num(capm('capm_beta'), 3))}${stat('Alfa tj.', pct(capm('capm_alpha')))}
+        ${stat('HAC t alfe', num(capm('capm_alpha_t')))}${stat('R²', pct(capm('capm_r2'), 1))}
+        ${stat('FF5 + momentum: alfa tj.' + fixed, pct(r.ff6_alpha))}${stat('FF5 + momentum: HAC t alfe' + fixed, num(r.ff6_alpha_t))}
+        ${stat('FF5 + momentum: R²' + fixed, pct(r.ff6_r2, 1))}
+      </dl><p>Bruto long-short prinos prema Fama–French tržišnom višku (Mkt−RF). ${capmIn ? `Sort unutar univerzuma ${SIZE_LABEL[state.size]}, cijela povijest tog runa (od 2009.)` : 'Cijeli univerzum i cijela dostupna povijest faktora'}, najmanje 104 uparena tjedna.</p></section>
+      <section><h2>Prediktivnost</h2><dl>
+        ${stat('IC t', num(r.ic_t))}${stat('Parcijalni IC t', num(r.partial_ic_t))}
+        ${stat('Fama–MacBeth t' + fixed, num(r.fmb_t))}
+        ${stat('BH q' + fixed, num(r.bh_q, 3))}${stat('BY q' + fixed, num(r.by_q, 3))}
+        ${stat('Romano–Wolf p' + fixed, num(r.rw_p, 3))}
+        ${!r.is_composite && r.grade_grp && state.lvl !== 'g' ? stat('Razina grupa: ocjena · BH q · RW p', esc(r.grade_grp) + ' · ' + num(r.bh_q_grp, 3) + ' · ' + num(r.rw_p_grp, 3)) : ''}
+      </dl></section>
+      <section><h2>Barra · tjedni FMP</h2><dl>
+        ${stat('Bruto prinos tj.', pct(r.fmp_mean))}${stat('HAC t prinosa', num(r.fmp_t))}
+        ${stat('Sharpe (god.)', num(r.fmp_sharpe))}${stat('Neto tj. · 25 bps', pct(r.fmp_net_25bps))}
+        ${stat('FF5 + momentum: HAC t alfe' + fixed, num(r.fmp_ff6_alpha_t))}
+      </dl></section>
+    </div>
+    <div class="charts">
+      <div class="card"><h2>Long i short strana · sorting</h2><p>Kumulativni višak nad tržištem: long noga − tržište i tržište − short noga (vrijednosno ponderirani univerzum). Zbroj dviju linija je long-short prinos.</p><div id="c-legs"></div><div id="t-legs"></div></div>
+      <div class="card"><h2>Po veličini · sorting</h2><p>Isti JKP tercilni portfelj ograničen na veličinsku grupu (NYSE percentili: mega &gt; p80, large p50–80, small p20–50, micro p1–20, nano &lt; p1).</p><div id="c-size"></div><div id="t-size"></div></div>
+      <div class="card" style="grid-column:1/-1"><h2>Po univerzumu · sorting</h2><p>JKP tercilni portfelj složen samo od članova indeksa na datum formiranja (sastav ETF-a SPY, IWB, IWM, IWV; od lipnja 2009.), u smjeru trgovanja cijelog univerzuma. IC, FMP i FMB procijenjeni su unutar indeksa; FMB t odnosi se na ocjenski uzorak, a CAPM α t na cijelu povijest indeksnog runa.</p><div id="c-uni"></div><div id="t-uni"></div></div>
+      <div class="card"><h2>Prosječni prinos po decilima · sorting</h2><p>Jednako ponderirani decili (NYSE granice), cijeli ocjenski uzorak. Decil 1 = najniža sirova vrijednost karakteristike.</p><div id="c-dec"></div></div>
+      <div class="card"><h2>IC kroz vrijeme</h2><p>Klizni 52-tjedni prosjek jednotjednog Spearman IC-a, poravnat sa smjerom trgovanja${uSel && uSel.ic ? ', unutar univerzuma ' + SIZE_LABEL[state.size] : ', cijeli univerzum'}.</p><div id="c-ic"></div></div>
+      <div class="card"><h2>IC po horizontu</h2><p>Prosječni IC za 1 tjedan unaprijed, cijeli ocjenski uzorak.</p><div id="c-decay"></div></div>
+      <div class="card"><h2>Podrazdoblja i troškovi</h2><p>Prosječni tjedni long-short prinos (JKP tercili, sve veličine), vrijednosti iz pipelinea.</p>
+        <table class="small"><tbody>
+          ${[['2007.–2014.', base.mean_2007_2014], ['2015.–2019.', base.mean_2015_2019], ['2020.–2024.', base.mean_2020_2024],
+             ['Cijeli uzorak (opisno)', base.mean_full], ['Neto uz 10 bps', base.mean_net_10bps], ['Neto uz 25 bps', base.mean_net_25bps], ['Neto uz 50 bps', base.mean_net_50bps]]
+            .map(([l, v]) => `<tr><td class="l">${l}</td><td>${pct(v)}</td></tr>`).join('')}
+          <tr><td class="l">Break-even trošak</td><td>${base.break_even_cost_bps == null ? '–' : num(base.break_even_cost_bps, 0) + ' bps'}</td></tr>
+          <tr><td class="l">Medijan broja dionica</td><td>${base.median_stocks == null ? '–' : num(base.median_stocks, 0)}</td></tr>
+        </tbody></table></div>
+    </div>`;
+  $('.lead-charts').after(contextNoteElement);
+  if (!d?.ret?.dates?.length && d?.fmp?.dates?.length) {
+    $('.lead-charts').prepend($('#c-barra').closest('.card'));
+  }
+  if (!current || current.r.key !== key) scrollTo(0, 0);
+  current = { r, d }; drawDetail();
+}
+
+function drawDetail() {
+  if (!current || $('#detail').hidden) return;
+  const { r, d } = current, none = id => { $(id).innerHTML = '<div class="empty">Nema podataka.</div>'; };
+  const statRange = rangeFor(r), range = state.per === 'grade' ? null : statRange;
+  const marker = !range && r.direction_source === 'training_only' && r.grade_start
+    ? { x: Date.parse(r.grade_start), label: 'početak ocjenskog uzorka' } : null;
+  const line = (dates, values, f = v => v, dateRange = range) => { const c = clip(ms(dates), values, dateRange); return { x: c.x, y: f(c.y) }; };
+  const uSel = d && d.universe && d.universe[state.size] && d.universe[state.size].dates.length ? d.universe[state.size] : null;
+  if (uSel) lineChart($('#c-cum'), { unit: ' %', digits: 1, marker, series: [
+    { name: 'JKP tercili unutar indeksa, bruto', color: '--s1', ...line(uSel.dates, uSel.gross, cum, statRange) },
+    { name: 'JKP tercili unutar indeksa, neto 25 bps', color: '--s2', ...line(uSel.dates,
+      A(uSel.gross).map((v, i) => v == null ? null : v - 0.0025 * (A(uSel.turnover)[i] || 0)), cum, statRange) }] });
+  else if (d && d.ret) lineChart($('#c-cum'), { unit: ' %', digits: 1, marker, series: [
+    { name: 'JKP tercili, bruto', color: '--s1', ...line(d.ret.dates, d.ret.gross, cum, statRange) },
+    { name: 'JKP tercili, neto 25 bps', color: '--s2', ...line(d.ret.dates, d.ret.net25, cum, statRange) },
+    { name: 'EW decili (krajnji), bruto', color: '--s3', ...line(d.ew && d.ew.dates, d.ew && d.ew.gross, cum, statRange) }] });
+  else none('#c-cum');
+  if (d && d.legs && A(d.legs.market).some(v => v != null)) {
+    const mk = A(d.legs.market), lm = ms(d.legs.dates);
+    const ex = (leg, sg) => A(leg).map((v, i) => v == null || mk[i] == null ? null : sg * (v - mk[i]));
+    const sides = [['Long strana (long − tržište)', d.legs.long, 1], ['Short strana (tržište − short)', d.legs.short, -1]];
+    lineChart($('#c-legs'), { unit: ' %', digits: 1, marker, series: sides.map(([name, leg, sg], i) =>
+      ({ name, color: '--s' + (i + 1), ...line(d.legs.dates, ex(leg, sg), cum) })) });
+    const avg = x => x.length ? x.reduce((p, q) => p + q, 0) / x.length : null;
+    $('#t-legs').innerHTML = '<table class="small"><thead><tr><th class="l">Strana</th><th>Prinos noge</th><th>Višak nad tržištem</th><th>HAC t</th><th>Sharpe viška</th><th>Tj.</th></tr></thead><tbody>' +
+      sides.map(([name, leg, sg], i) => {
+        const e = ex(leg, sg), raw = clip(lm, A(leg).map((v, j) => e[j] == null ? null : v), statRange).y.filter(v => v != null);
+        const x = clip(lm, e, statRange).y.filter(v => v != null), h = x.length >= 3 ? hac(x) : null;
+        return `<tr><td class="l"><span class="sw" style="background:var(--s${i + 1})"></span>${name}</td><td>${pct(avg(raw))}</td><td>${h ? pct(h.mean) : '–'}</td>` +
+          `<td class="${h && h.t != null && Math.abs(h.t) >= 3 ? 'strong' : ''}">${h ? num(h.t) : '–'}</td><td>${h && h.sd > 0 ? num(h.mean / h.sd * Math.sqrt(PPY)) : '–'}</td><td>${x.length}</td></tr>`;
+      }).join('') + '</tbody></table>';
+  } else { none('#c-legs'); $('#t-legs').innerHTML = ''; }
+  if (d && d.size) {
+    lineChart($('#c-size'), { unit: ' %', digits: 1, marker, series: SIZES.map(([k, name], i) =>
+      ({ name, color: '--s' + (i + 1), ...line(d.size[k].dates, d.size[k].gross, cum) })) });
+    const avg = x => x.reduce((p, q) => p + q, 0) / x.length;
+    $('#t-size').innerHTML = '<table class="small"><thead><tr><th class="l">Grupa</th><th>Prinos tj.</th><th>HAC t</th><th>Sharpe</th><th>Turnover</th><th>Neto 25 bps</th><th>IC t</th><th>Partial IC t</th><th>Tj.</th></tr></thead><tbody>' +
+      SIZES.map(([k, name], i) => {
+        const x = clip(ms(d.size[k].dates), d.size[k].gross, statRange).y, s = x.length >= MIN_MONTHS ? hac(x) : null;
+        const to = clip(ms(d.size[k].dates), d.size[k].turnover, statRange).y.filter(v => v != null);
+        const turn = s && to.length ? avg(to) : null, ic = d.size_ic && d.size_ic[k];
+        const it = f => { if (!ic) return null; const y = clip(ms(ic.dates), ic[f], statRange).y.filter(v => v != null); return y.length >= MIN_MONTHS ? hac(y).t : null; };
+        const tcell = v => `<td class="${v != null && Math.abs(v) >= 3 ? 'strong' : v == null ? 'dim' : ''}">${num(v)}</td>`;
+        return `<tr><td class="l"><span class="sw" style="background:var(--s${i + 1})"></span>${name}</td><td>${s ? pct(s.mean) : '–'}</td>` +
+          tcell(s ? s.t : null) + `<td>${s && s.sd > 0 ? num(s.mean / s.sd * Math.sqrt(PPY)) : '–'}</td>` +
+          `<td>${num(turn)}</td><td>${turn == null ? '–' : pct(s.mean - 0.0025 * turn)}</td>` + tcell(it('ic')) + tcell(it('partial')) + `<td>${x.length}</td></tr>`;
+      }).join('') + '</tbody></table>';
+  } else { none('#c-size'); $('#t-size').innerHTML = ''; }
+  if (d && d.universe) {
+    lineChart($('#c-uni'), { unit: ' %', digits: 1, marker, series: UNIVERSES.map(([k, name], i) =>
+      ({ name, color: '--s' + (i + 1), ...line(d.universe[k].dates, d.universe[k].gross, cum) })) });
+    const avg = x => x.reduce((p, q) => p + q, 0) / x.length;
+    $('#t-uni').innerHTML = '<table class="small"><thead><tr><th class="l">Univerzum</th><th>Prinos tj.</th><th>HAC t</th><th>Sharpe</th><th>Turnover</th><th>Neto 25 bps</th><th>IC t</th><th>Partial IC t</th><th>FMP t</th><th>CAPM α t</th><th>FF6 α t</th><th>FMB t</th><th>Tj.</th></tr></thead><tbody>' +
+      UNIVERSES.map(([k, name], i) => {
+        const tOf = (o, f) => { if (!o) return null; const y = clip(ms(o.dates), o[f], statRange).y.filter(v => v != null); return y.length >= MIN_MONTHS ? hac(y).t : null; };
+        const tcell = (v, fixed) => `<td class="${v == null || fixed ? 'dim' : Math.abs(v) >= 3 ? 'strong' : ''}">${num(v)}</td>`;
+        const fixedCols = state.per !== 'grade';
+        const u = d.universe[k], x = clip(ms(u.dates), u.gross, statRange).y, s = x.length >= MIN_MONTHS ? hac(x) : null;
+        const to = clip(ms(u.dates), u.turnover, statRange).y.filter(v => v != null), turn = s && to.length ? avg(to) : null;
+        return `<tr><td class="l"><span class="sw" style="background:var(--s${i + 1})"></span>${name}</td><td>${s ? pct(s.mean) : '–'}</td>` +
+          `<td class="${s && s.t != null && Math.abs(s.t) >= 3 ? 'strong' : ''}">${s ? num(s.t) : '–'}</td><td>${s && s.sd > 0 ? num(s.mean / s.sd * Math.sqrt(PPY)) : '–'}</td>` +
+          `<td>${num(turn)}</td><td>${turn == null ? '–' : pct(s.mean - 0.0025 * turn)}</td>` +
+          tcell(tOf(u.ic, 'ic')) + tcell(tOf(u.ic, 'partial')) + tcell(tOf(u.fmp, 'pure')) +
+          tcell(r['capm_alpha_t_' + k], false) + tcell(r['ff6_alpha_t_' + k], fixedCols) + tcell(r['fmb_t_' + k], fixedCols) + `<td>${x.length}</td></tr>`;
+      }).join('') + '</tbody></table>';
+  } else { none('#c-uni'); $('#t-uni').innerHTML = ''; }
+  const dec = d ? A(d.deciles) : [];
+  if (dec.length) barChart($('#c-dec'), { labels: dec.map((_, i) => String(i + 1)), unit: ' %', xTitle: 'Decil',
+    series: [{ name: 'Prosječni tjedni prinos', color: '--s1', values: dec.map(v => v == null ? null : v * 100) }] });
+  else none('#c-dec');
+  // The IC chart follows the selected sample where an index run has its own IC.
+  const icSrc = uSel && uSel.ic && A(uSel.ic.dates).length ? uSel.ic : d && d.ic;
+  if (icSrc) lineChart($('#c-ic'), { digits: 3, marker, series: [
+    { name: 'IC', color: '--s1', ...line(icSrc.dates, rolling(icSrc.ic)) },
+    { name: 'Partial IC (uz kontrole)', color: '--s2', ...line(icSrc.dates, rolling(icSrc.partial)) }] });
+  else none('#c-ic');
+  if (d && d.decay) barChart($('#c-decay'), { labels: A(d.decay.horizon).map(h => h + ' tj.'), digits: 3, series: [
+    { name: 'IC', color: '--s1', values: A(d.decay.ic) }, { name: 'Partial IC', color: '--s2', values: A(d.decay.partial) }] });
+  else none('#c-decay');
+  if (uSel && uSel.fmp) lineChart($('#c-barra'), { unit: ' %', digits: 1, marker, series: [
+    { name: 'Čisti FMP unutar indeksa (neutralan na stilove i industrije)', color: '--s1', ...line(uSel.fmp.dates, uSel.fmp.pure, cum, statRange) },
+    ...(uSel.fmp.simple ? [{ name: 'Jednostavni FMP unutar indeksa', color: '--s2', ...line(uSel.fmp.dates, uSel.fmp.simple, cum, statRange) }] : [])] });
+  else if (d && d.fmp) lineChart($('#c-barra'), { unit: ' %', digits: 1, marker, series: [
+    { name: 'Čisti FMP (neutralan na stilove i industrije)', color: '--s1', ...line(d.fmp.dates, d.fmp.pure, cum, statRange) },
+    { name: 'Jednostavni FMP', color: '--s2', ...line(d.fmp.dates, d.fmp.simple, cum, statRange) }] });
+  else none('#c-barra');
+}
+
+/* ---------- routing and shared controls ---------- */
+function route() {
+  hideTip();
+  $('#results').before(contextNoteElement);
+  const mt = location.hash.match(/^#f=(.+)$/);
+  $('#overview').hidden = $('#list').hidden = $('#results').hidden = !!mt;
+  document.title = mt ? (BYKEY.get(decodeURIComponent(mt[1]))?.feature || 'Faktor') + ' · Atlas faktora' : 'Registar · Atlas faktora';
+  document.querySelectorAll('.filters .list-only').forEach(el => { el.hidden = !!mt; });
+  if (mt) showDetail(decodeURIComponent(mt[1]));
+  else { current = null; $('#detail').hidden = true; $('#detail').innerHTML = ''; renderList(); }
+}
+async function contextChanged() {
+  if ((state.per === 'last5' || state.per === 'custom') && !PANEL) await needPanel();
+  route();
+}
+$('#reset-filters').onclick = () => {
+  Object.assign(state, filterDefaults, { page: 1 });
+  $('#q').value = state.q;
+  $('#fds').value = state.ds; $('#flvl').value = state.lvl; $('#fcl').value = state.cl;
+  $('#fgr').value = state.gr;
+  $('#ft').value = state.t;
+  $('#fper').value = state.per;
+  $('#funi').value = state.size;
+  $('#fside').value = state.side;
+  $('#fy0').replaceChildren();
+  $('#fy1').replaceChildren();
+  $('#custom').hidden = true;
+  $('.tablewrap').scrollTop = 0;
+  const url = new URL(location.href);
+  for (const key of ['per', 'size', 'uni', 'side']) url.searchParams.delete(key);
+  if (url.search !== location.search) {
+    if (url.protocol === 'file:') { location.replace(url.href); return; }
+    history.replaceState(history.state, '', url.href);
+  }
+  route();
+};
+$('#fper').addEventListener('change', async e => {
+  state.page = 1; state.per = e.target.value;
+  $('#custom').hidden = state.per !== 'custom';
+  if (state.per === 'custom' && !$('#fy0').options.length) {
+    await needPanel();
+    if (state.per !== 'custom') return;
+    const y0 = new Date(PANEL.ms[0]).getUTCFullYear(), y1 = new Date(PANEL.ms[PANEL.ms.length - 1]).getUTCFullYear();
+    const opts = Array.from({ length: y1 - y0 + 1 }, (_, i) => `<option>${y0 + i}</option>`).join('');
+    $('#fy0').innerHTML = opts; $('#fy1').innerHTML = opts;
+    state.y0 = y0; state.y1 = y1; $('#fy0').value = y0; $('#fy1').value = y1;
+  }
+  contextChanged();
+});
+$('#fy0').addEventListener('change', e => { state.y0 = +e.target.value; if (state.y1 < state.y0) { state.y1 = state.y0; $('#fy1').value = state.y1; } contextChanged(); });
+$('#fy1').addEventListener('change', e => { state.y1 = +e.target.value; if (state.y1 < state.y0) { state.y0 = state.y1; $('#fy0').value = state.y0; } contextChanged(); });
+$('#funi').addEventListener('change', e => { state.page = 1; state.size = e.target.value; contextChanged(); });
+$('#fside').addEventListener('change', e => { state.page = 1; state.side = e.target.value; contextChanged(); });
+
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawDetail, 150); });
+addEventListener('hashchange', route);
+// Optional deep link, e.g. index.html?per=2020-2024&size=mega&view=barra
+const qp = new URLSearchParams(location.search);
+for (const [param, id, key] of [['per', '#fper', 'per'], ['size', '#funi', 'size'], ['side', '#fside', 'side'], ['uni', '#funi', 'size'], ['lvl', '#flvl', 'lvl']]) {
+  const v = qp.get(param), el = $(id);
+  if (v && v !== 'custom' && [...el.options].some(o => o.value === v)) { el.value = v; state[key] = v; }
+}
+$('#funi').value = state.size;
+if ([...$('#views').children].some(b => b.value === qp.get('view'))) state.view = qp.get('view');
+// Keep the compact view accessible from existing summary links.
+if (state.view === 'summary') $('#views [value="summary"]').hidden = false;
+initList(); contextChanged();
+})();
+</script>
+</body>
+</html>

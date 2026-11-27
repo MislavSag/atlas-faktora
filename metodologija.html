@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<link href="data:," rel="icon">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metodologija statistika</title>
+<style>
+:root {
+color-scheme: light;
+--page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+--grid: #e1e0d9; --border: rgba(11,11,11,0.10); --wash: rgba(11,11,11,0.04); --accent: #2a78d6;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+color-scheme: dark;
+--page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+--grid: #2c2c2a; --border: rgba(255,255,255,0.10); --wash: rgba(255,255,255,0.05); --accent: #3987e5;
+}
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink);
+font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 28px; line-height: 1.25; margin: 0 0 12px; font-weight: 650; }
+h2 { font-size: 21px; margin: 40px 0 10px; padding-top: 8px; font-weight: 650; scroll-margin-top: 56px; }
+h3 { font-size: 16px; margin: 26px 0 6px; font-weight: 650; scroll-margin-top: 56px; }
+p, ul, ol { margin: 0 0 14px; }
+li { margin: 0 0 4px; }
+hr { border: 0; border-top: 1px solid var(--grid); margin: 32px 0; }
+code { font: 13px/1.5 ui-monospace, Consolas, monospace; background: var(--wash); padding: 1px 4px; border-radius: 4px; }
+pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 0 0 16px; }
+table { border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--grid); }
+th { color: var(--ink-2); font-weight: 600; }
+math[display="block"] { display: block; overflow-x: auto; overflow-y: hidden; padding: 6px 0; margin: 0 0 14px; }
+math { font-size: 1.05em; }
+</style>
+<style type="text/css">:root {
+--page:#f5f4ef; --surface:#fffefa; --ink:#221e2b; --ink-2:#514d59; --muted:#696571;
+--grid:#e1ded7; --border:#d5d1cb; --axis:#aaa5a6; --wash:#f1edf4; --accent:#584373;
+--s1:#7150a0; --s2:#ba5939; --s3:#16766e; --s4:#966919; --s5:#ad4e80;
+--hero:#342946; --hero-ink:#fff9ed; --hero-muted:#d5c9e0;
+}
+@media (prefers-color-scheme:dark) {
+:root {
+--page:#18171c; --surface:#211f25; --ink:#f4efe6; --ink-2:#c5bfcd; --muted:#afa8b6;
+--grid:#39353e; --border:#48414c; --axis:#81798a; --wash:#302a38; --accent:#d5b4f6;
+--s1:#c8a5f4; --s2:#f39d75; --s3:#64c4b8; --s4:#dbb16a; --s5:#e68eb9;
+--hero:#342a43;
+}
+}
+[hidden] { display:none !important; }
+body { font:14px/1.45 "Inter","Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+main,.navinner { width:min(100%,1560px); margin:auto; padding-inline:clamp(16px,3.6vw,64px); }
+main { padding-block:20px 42px; }
+.mast { border-bottom:1px solid var(--border); background:var(--surface); }
+.navinner { display:flex; align-items:center; justify-content:space-between; min-height:58px; }
+.brand { display:inline-flex; align-items:center; gap:10px; color:var(--ink); font:600 20px/1.1 Georgia,serif; letter-spacing:-.6px; }
+.brand:hover { text-decoration:none; }
+.mark { display:flex; align-items:flex-end; gap:3px; padding:6px 7px; height:28px; background:var(--hero); border-radius:6px; }
+.mark i { width:3px; background:#ecc3aa; height:43%; transform:skewY(-14deg); }
+.mark i:nth-child(2) { height:68%; } .mark i:last-child { height:100%; }
+.mast nav { align-self:stretch; display:flex; gap:24px; }
+.mast nav a { display:grid; align-content:center; color:var(--ink-2); font-weight:550; font-size:13px; border-bottom:2px solid transparent; }
+.mast nav a[aria-current] { color:var(--ink); border-color:var(--accent); }
+:focus-visible { outline:3px solid var(--s1); outline-offset:2px; }
+.overview { display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(24px,6vw,112px); align-items:center;
+background:var(--hero); color:var(--hero-ink); border-radius:13px; padding:24px clamp(22px,3.1vw,52px); }
+h1,.workspace-title h2,.guide h2 { font-family:"Source Serif 4",Georgia,serif; font-weight:500; letter-spacing:-.045em; }
+.overview h1 { margin:0; font-size:clamp(32px,3.6vw,55px); line-height:1.05; }
+#listsub { color:var(--hero-muted); margin:7px 0 16px; font-size:13px; }
+.module-note { grid-column:1/-1; color:var(--hero-muted); margin:0 0 16px; font-size:13px; max-width:100ch; line-height:1.5; }
+.totals { display:flex; gap:clamp(18px,3.5vw,60px); }
+.totals span,.totals strong { display:block; }
+.totals strong { font-size:23px; line-height:1.2; letter-spacing:-.045em; font-variant-numeric:tabular-nums; }
+.totals span { color:var(--hero-muted); font-size:12px; }
+.distribution h2 { font-size:14px; font-weight:550; color:var(--hero-ink); }
+#gradebar { display:flex; height:18px; margin:14px 0 12px; gap:2px; overflow:hidden; border-radius:4px; }
+.grade-A { background:#a2d5c7; } .grade-B { background:#f4ac81; } .grade-C { background:#d6b3ed; }
+.grade-D { background:#9487ac; } .grade-none { background:repeating-linear-gradient(-45deg,#736783 0 2px,#584c66 2px 5px); }
+#gradekey { display:flex; flex-wrap:wrap; justify-content:space-between; gap:3px; }
+button, input,select { font:inherit; }
+button { color:inherit; cursor:pointer; }
+#gradekey button { display:grid; justify-items:start; background:none; border:1px solid transparent; border-radius:4px; padding:4px; }
+#gradekey button[data-grade=""] { align-self:center; padding:4px 8px; border-color:#8c8099; font-weight:600; }
+#gradekey button:hover,#gradekey button[aria-pressed=true] { border-color:#a799b7; }
+#gradekey span { color:var(--hero-muted); font-size:12px; white-space:nowrap; }
+#gradekey i { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; }
+#gradekey strong { font-size:16px; font-weight:600; margin-left:13px; }
+.workspace-title { display:flex; align-items:baseline; flex-wrap:wrap; gap:12px; margin:20px 0 12px; }
+.workspace-title h2 { font-size:clamp(23px,2vw,31px); line-height:1.2; margin:0; }
+.count { font-size:13px; margin:0; color:var(--muted); font-variant-numeric:tabular-nums; }
+.filters { display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px; margin:0; padding:4px 0 10px; border-bottom:1px solid var(--grid); }
+.filters label:not(.search) { display:grid; gap:3px; min-width:0; color:var(--ink-2); font-size:12px; }
+select,input[type=search] { border-color:var(--border); min-height:36px; padding:6px 10px; }
+.filters select { max-width:100%; font-size:13px; }
+.search { display:flex; gap:6px; align-items:center; flex:1; min-width:160px; border:1px solid var(--border); background:var(--surface); border-radius:6px; }
+.search:focus-within { outline:2px solid var(--accent); }
+.search span { width:14px; height:14px; border:1.65px solid var(--muted); border-radius:50%; position:relative; margin-inline:12px 1px; flex:none; font-size:0; }
+.search span:after { content:""; position:absolute; width:6px; height:2px; background:var(--muted); transform:rotate(46deg); bottom:-2px; right:-4px; }
+.search input[type=search] { width:100%; min-width:0; height:34px; min-height:0; border:0; background:transparent; padding-left:4px; outline:0; }
+#custom { display:inline-flex; align-items:center; gap:4px; }
+#reset-filters { min-height:36px; padding:6px 10px; border:1px solid var(--border); border-radius:5px; background:var(--surface); color:var(--accent); font-size:13px; }
+#reset-filters:hover { background:var(--wash); }
+.note { margin:8px 0; }
+.methods { display:flex; gap:4px; overflow-x:auto; padding:9px 2px; }
+.methods button,.pager button { border:1px solid transparent; border-radius:5px; color:var(--ink-2); background:transparent; font-size:13px; padding:6px 12px; white-space:nowrap; }
+.methods button[aria-pressed=true] { background:var(--hero); color:var(--hero-ink); }
+.methods button:hover:not([aria-pressed=true]),.pager button:hover:not(:disabled) { background:var(--wash); }
+.tablewrap { border-color:var(--border); max-height:65vh; border-radius:9px; scrollbar-color:var(--axis) var(--surface); }
+#tbl thead th { background:var(--page); }
+#tbl tr.cols button { background:transparent; border:0; padding:0; color:inherit; font-weight:600; }
+#tbl tr.cols th[aria-sort=ascending],#tbl tr.cols th[aria-sort=descending] { color:var(--accent); }
+#tbl.compact .grp { display:none; }
+#tbl.compact .cols th { top:0; }
+#tbl.compact td.sep,#tbl.compact th.sep { border-left:0; }
+#tbl td:first-child a { color:var(--accent); font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; font-weight:600; }
+#tbl.compact td:first-child { width:34%; }
+#tbl.compact td:first-child small { display:block; font-size:11px; color:var(--muted); }
+#tbl.compact td { padding-block:6px; } #tbl td { font-size:13px; }
+@media(min-width:761px) {
+body:not(.guide) :is(main,.navinner) { width:min(100%,2400px); padding-inline:clamp(12px,1.2vw,28px); }
+}
+#tbl.all-methods :is(th,td) { padding-inline:clamp(3px,.35vw,7px); }
+#tbl.all-methods .cols button { white-space:normal; line-height:1.15; }
+#tbl.all-methods td:is(:nth-child(1),:nth-child(2),:nth-child(3)) { white-space:normal; overflow-wrap:anywhere; line-height:1.2; }
+#tbl.all-methods td:first-child { width:clamp(150px,17vw,360px); min-width:150px; }
+#tbl.all-methods td:nth-child(2) { width:clamp(90px,9vw,200px); min-width:90px; }
+#tbl.all-methods td:nth-child(3) { width:clamp(80px,7.5vw,170px); min-width:80px; }
+#tbl.all-methods .cols th:first-child,#tbl.all-methods td:first-child { position:sticky; left:0; box-shadow:1px 0 var(--grid); }
+#tbl.all-methods .cols th:first-child { z-index:3; }
+#tbl.all-methods td:first-child { z-index:1; background:var(--surface); }
+.chip { border-radius:4px; color:var(--ink-2); }
+.chip.top { color:#4b2c1b; background:#f2c4a8; border-color:#dfaf92; }
+.pager { display:flex; justify-content:space-between; align-items:center; margin-top:10px; color:var(--muted); font-size:13px; }
+.pager button { border-color:var(--border); background:var(--surface); }
+.pager button:disabled { opacity:.5; cursor:default; }
+.back { margin:16px 0 10px; font-size:13px; }
+#detail h1 { font-family:"IBM Plex Mono",Consolas,monospace; font-size:clamp(22px,2.3vw,38px); font-weight:600; }
+#detail .meta { font-size:13px; }
+#detail .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1px; border:1px solid var(--border); background:var(--border); border-radius:8px; overflow:hidden; }
+#detail .tile { border:0; border-radius:0; }
+.card { padding:15px; }
+.card h2 { font-size:16px; }
+#t-legs,#t-uni,#t-size { overflow:auto; }
+.guide { --mast-height:59px; --anchor-gap:calc(var(--mast-height) + 16px);
+--guide-width:1320px; --guide-pad:clamp(16px,3.6vw,64px); --contents-width:clamp(220px,20vw,280px);
+padding-top:var(--mast-height); }
+.guide .mast { position:fixed; inset:0 0 auto; z-index:5; }
+.guide main { max-width:var(--guide-width); padding-block:28px 72px;
+padding-right:calc(var(--guide-pad) + var(--contents-width) + clamp(24px,4vw,64px)); }
+.guide article :is(h1,h2,h3)[id] { scroll-margin-top:var(--anchor-gap); }
+.guide-contents { position:fixed; z-index:4; top:var(--anchor-gap); width:var(--contents-width);
+right:calc(max(0px, (100% - var(--guide-width)) / 2) + var(--guide-pad));
+border:1px solid var(--border); border-radius:8px; background:var(--surface); }
+.guide-contents summary { padding:10px 14px; cursor:pointer; font-weight:650; }
+.guide-contents nav { max-height:calc(100vh - var(--anchor-gap) - 60px); max-height:calc(100dvh - var(--anchor-gap) - 60px);
+overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; padding:0 10px 10px; }
+.guide-contents ul { padding:0; margin:0; list-style:none; }
+.guide-contents li { margin:0; }
+.guide-contents a { display:block; padding:4px 6px; border-radius:4px; color:var(--ink); font-size:13px; line-height:1.35; }
+.guide-contents nav > ul > li > a { display:none; }
+.guide-contents a:hover,.guide-contents a:focus-visible { background:var(--wash); color:var(--accent); }
+.guide article { font-size:16px; line-height:1.65; overflow-wrap:anywhere; min-width:0; }
+.guide h1 { font-size:clamp(31px,3.8vw,49px); }
+.guide h2 { font-size:29px; }
+.guide table { min-width:65%; }
+.guide code { overflow-wrap:anywhere; }
+.guide pre code { overflow-wrap:normal; }
+@media(max-width:760px) {
+.overview { gap:18px; grid-template-columns:1fr; padding:18px; }
+.intro { display:grid; grid-template-columns:1fr auto; }
+#listsub { grid-column:1/-1; margin:4px 0 10px; }
+.totals { grid-column:1/-1; gap:22px; }
+.totals strong { font-size:19px; }
+.distribution { border-top:1px solid #685a76; padding-top:10px; display:grid; grid-template-columns:auto 1fr; align-items:center; gap:4px 12px; }
+.distribution h2 { font-size:12px; }
+#gradebar { height:10px; margin:0; }
+#gradekey { grid-column:1/-1; }
+#gradekey button { display:flex; gap:4px; align-items:center; }
+#gradekey strong { font-size:12px; margin:0; }
+.filters { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 8px; }
+.search { grid-column:1/-1; }
+.filters select { width:100%; font-size:12px; padding-inline:4px; }
+#custom { grid-column:1/-1; }
+#reset-filters { justify-self:start; }
+main { padding-top:12px; }
+.mast nav { gap:14px; }
+.methods button { padding:7px 9px; }
+#tbl.compact td:first-child { max-width:175px; white-space:normal; overflow-wrap:anywhere; }
+#tbl th,#tbl td { padding-inline:8px; }
+#tbl td:first-child a { font-size:11px; }
+.card { padding:10px; }
+}
+.provenance summary { cursor:pointer; color:var(--accent); padding:5px 0; font-size:13px; }
+.provenance .meta { margin:4px 0 12px; }
+@media(max-width:850px) {
+.guide { --anchor-gap:calc(var(--mast-height) + 56px); }
+.guide main { padding-right:var(--guide-pad); padding-top:56px; }
+.guide-contents { top:var(--mast-height); inset-inline:var(--guide-pad); width:auto; border-radius:0 0 8px 8px; }
+.guide-contents nav { position:absolute; inset:auto -1px auto; max-height:min(60vh,calc(100vh - var(--anchor-gap)));
+max-height:min(60dvh,calc(100dvh - var(--anchor-gap))); background:var(--surface); border:1px solid var(--border);
+border-radius:0 0 8px 8px; box-shadow:0 8px 18px var(--border); }
+.guide-contents a { padding-block:7px; }
+}
+@media(max-width:760px) {
+#tbl.compact .cols th:first-child,#tbl.compact td:first-child { position:sticky; left:0; min-width:148px; width:148px; max-width:148px; border-right:1px solid var(--grid); }
+#tbl.compact .cols th:first-child { z-index:3; }
+#tbl.compact td:first-child { background:var(--surface); z-index:1; }
+.methods { flex-wrap:wrap; gap:2px; }
+.methods button { padding-inline:7px; }
+}
+#detail .factor-heading .back { margin:10px 0 6px; }
+#detail .factor-heading h1 { margin:0; line-height:1.15; }
+#detail .factor-heading .meta { margin:5px 0 12px; }
+#detail .primary-stats { grid-template-columns:repeat(6,minmax(0,1fr)); margin-bottom:12px; }
+#detail .primary-stats .tile { padding:9px 12px; }
+#detail .primary-stats .v { color:var(--ink); line-height:1.25; font-variant-numeric:tabular-nums; }
+#detail .lead-charts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.stat-groups { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:12px 0; }
+.stat-groups section { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 14px; min-width:0; }
+.stat-groups h2 { font-size:15px; margin:0 0 7px; }
+.stat-groups dl { margin:0; }
+.stat-groups dl div { display:flex; justify-content:space-between; align-items:baseline; gap:6px; padding:3px 0; border-top:1px solid var(--grid); }
+.stat-groups dt,.stat-groups p { color:var(--ink-2); font-size:12px; }
+.stat-groups dd { margin:0; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.stat-groups p { line-height:1.4; margin:6px 0 0; }
+.provenance { margin:8px 0; }
+@media(max-width:1000px) {
+.stat-groups { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:760px) {
+#detail .primary-stats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+#detail .primary-stats .tile { padding:7px; }
+#detail .primary-stats .l { line-height:1.15; }
+#detail .lead-charts { grid-template-columns:1fr; }
+}
+@media(max-width:520px) { .stat-groups { grid-template-columns:1fr; } }
+</style>
+</head>
+<body class="guide">
+<header class="mast"><div class="navinner"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>Atlas faktora</a><nav aria-label="Glavna navigacija"><a href="index.html">Registar</a><a aria-current="page" href="metodologija.html">Metodologija</a><a href="finfeatures/index.html">Finfeatures</a></nav></div></header>
+<main>
+<details class="guide-contents" open>
+  <summary>Sadržaj</summary>
+  <nav aria-label="Sadržaj metodologije"><ul>
+<li><a href="#statistike-na-stranici-faktora-intuicija-algebra-i-kod" id="toc-statistike-na-stranici-faktora-intuicija-algebra-i-kod">Statistike na stranici faktora: intuicija, algebra i kod</a>
+<ul>
+<li><a href="#1-zajedničke-postavke" id="toc-1-zajedničke-postavke">1. Zajedničke postavke</a></li>
+<li><a href="#2-sort-portfelj-i-prinos-faktora" id="toc-2-sort-portfelj-i-prinos-faktora">2. Sort portfelj i prinos faktora</a></li>
+<li><a href="#3-prosječni-prinos-volatilnost-i-sharpe" id="toc-3-prosječni-prinos-volatilnost-i-sharpe">3. Prosječni prinos, volatilnost i Sharpe</a></li>
+<li><a href="#4-hac-t" id="toc-4-hac-t">4. HAC t</a></li>
+<li><a href="#5-alfa-ocjene-faktora-ad" id="toc-5-alfa-ocjene-faktora-ad">5. Alfa ocjene faktora (A–D)</a></li>
+<li><a href="#6-turnover-neto-prinos-i-break-even-trošak" id="toc-6-turnover-neto-prinos-i-break-even-trošak">6. Turnover, neto prinos i break-even trošak</a></li>
+<li><a href="#7-long-i-short-strana" id="toc-7-long-i-short-strana">7. Long i short strana</a></li>
+<li><a href="#8-ic-i-partial-ic" id="toc-8-ic-i-partial-ic">8. IC i partial IC</a></li>
+<li><a href="#9-famamacbeth" id="toc-9-famamacbeth">9. Fama–MacBeth</a></li>
+<li><a href="#10-čisti-fmp-barra" id="toc-10-čisti-fmp-barra">10. Čisti FMP (Barra)</a></li>
+<li><a href="#11-ostale-statistike-u-sažetku" id="toc-11-ostale-statistike-u-sažetku">11. Ostale statistike u sažetku</a></li>
+<li><a href="#12-filteri-razdoblje-veličina-univerzum" id="toc-12-filteri-razdoblje-veličina-univerzum">12. Filteri: razdoblje, veličina, univerzum</a></li>
+<li><a href="#13-kako-čitati-statistike-zajedno" id="toc-13-kako-čitati-statistike-zajedno">13. Kako čitati statistike zajedno</a></li>
+<li><a href="#14-stupac--statistika--kod" id="toc-14-stupac--statistika--kod">14. Stupac → statistika → kod</a></li>
+<li><a href="#15-grupe-sličnih-faktora-kompoziti-i-romanowolf-p" id="toc-15-grupe-sličnih-faktora-kompoziti-i-romanowolf-p">15. Grupe sličnih faktora, kompoziti i Romano–Wolf p</a></li>
+<li><a href="#16-alfa-prema-famafrench-pet-faktora-i-momentumu-ff6-α" id="toc-16-alfa-prema-famafrench-pet-faktora-i-momentumu-ff6-α">16. Alfa prema Fama–French pet faktora i momentumu (FF6 α)</a></li>
+<li><a href="#17-identitet-izračuna-i-raspored-uzoraka" id="toc-17-identitet-izračuna-i-raspored-uzoraka">17. Identitet izračuna i raspored uzoraka</a></li>
+<li><a href="#18-tijek-izračuna-i-provjere-osjetljivosti" id="toc-18-tijek-izračuna-i-provjere-osjetljivosti">18. Tijek izračuna i provjere osjetljivosti</a></li>
+<li><a href="#literatura" id="toc-literatura">Literatura</a></li>
+</ul></li>
+</ul></nav>
+</details>
+<article>
+<h1 id="statistike-na-stranici-faktora-intuicija-algebra-i-kod">Statistike na stranici faktora: intuicija, algebra i kod</h1>
+<p>Ovaj dokument objašnjava svaku statistiku koju prikazuje stranica faktora: što mjeri, kako se točno računa i gdje je kod. Opće odluke o podacima i dizajnu testova su u <code>methodology.md</code>; ovdje je naglasak na samim brojevima.</p>
+<hr />
+<h2 id="1-zajedničke-postavke">1. Zajedničke postavke</h2>
+<p>Sve statistike dijele iste ulaze, pa ih vrijedi definirati jednom.</p>
+<p><strong>Datum formiranja.</strong> Zadnji trgovinski dan u mjesecu, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>. Signal <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">s_{i,t}</annotation></semantics></math> dionice <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> je vrijednost karakteristike poznata na zatvaranju tog dana.</p>
+<p><strong>Ciljni prinos.</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">r_{i,t+1}</annotation></semantics></math> je prinos od prvog <em>otvaranja</em> nakon datuma formiranja do prvog <em>otvaranja</em> nakon kraja sljedećeg mjeseca (<code>next_open_to_next_open</code>), kada se portfelj rebalansira. Signal se vidi na zatvaranju, a trguje se tek na sljedećem otvaranju, pa nema gledanja unaprijed. Prinos i turnover tako opisuju isti, neprekidno držani portfelj: ako dionica ostane u portfelju, ne prodaje se i ne kupuje ponovno, a njezin noćni prinos na prijelazu mjeseca ulazi u rezultat. Do metodologije 1.1.0 primarni je prinos završavao na zadnjem zatvaranju mjeseca (<code>next_open_to_period_close</code>); ta definicija i prinos od zatvaranja do zatvaranja ostaju kao provjere robusnosti. Ako je otvaranje očito pogrešno (log razlika između otvaranja i zatvaranja istog dana veća od 1), umjesto njega se koristi zatvaranje (<code>universe.max_open_close_log_gap</code>).</p>
+<p><strong>Nedostajući prinos.</strong> U istraživačkom načinu rada dionica bez ciljanog prinosa zadržava težinu i doprinosi prinosom 0 (<code>cash_zero</code>). Ne izbacuje se, jer bi izbacivanje ovisilo o budućoj informaciji. To vrijedi samo dok je opažen prinos za barem polovicu apsolutne težine portfelja (<code>alpha.target.min_return_coverage</code>). Ispod toga razdoblje nema prinos portfelja i ne ulazi u statistike. Tako zadnji datum formiranja, čije razdoblje držanja još nije opaženo, ne dobiva lažni prinos 0. Uz svaki mjesec sprema se i neto težina bez opaženog prinosa (<code>missing_net_weight</code>), pa se osjetljivost na pretpostavku o tim dionicama (npr. gubitak od 30 % pri delistiranju) može izračunati naknadno: prinos + pretpostavljeni prinos × ta težina.</p>
+<p><strong>Univerzum.</strong> NYSE, NASDAQ i AMEX, obične dionice, cijena ≥ 1 USD, tržišna kapitalizacija ≥ 1 mil. USD, signal ne stariji od 45 dana.</p>
+<p><strong>Smjer faktora.</strong> Svaki faktor ima smjer trgovanja: <code>higher</code> (kupuj visoke vrijednosti) ili <code>lower</code>. Smjer dolazi iz jednog od dva izvora:</p>
+<ul>
+<li>iz registra, kad je poznat unaprijed iz literature ili ekonomske logike;</li>
+<li>naučen iz podataka: predznak prosječnog Spearman IC-a do kraja 2014. (<code>learn_direction</code>, <code>R/alpha.R:23</code>).</li>
+</ul>
+<p><strong>Ocjenski uzorak.</strong> Za faktore sa smjerom iz registra to je cijelo razdoblje (2007–2024). Zadnji portfelj formira se krajem studenoga 2024. i drži kroz prosinac 2024. Podaci od 2025. nadalje nisu korišteni ni u jednom izračunu i ostaju netaknuti uzorak za završnu provjeru. Za faktore s naučenim smjerom to su samo mjeseci od siječnja 2015., jer bi inače isti podaci i birali smjer i ocjenjivali ga. Zato većina faktora u tablici ima 120 mjeseci.</p>
+<p><strong>Poravnanje predznaka.</strong> Sve statistike prikazane su u smjeru trgovanja: za faktor sa smjerom <code>lower</code> IC, FMB koeficijent i FMP prinos množe se s −1. Pozitivan broj uvijek znači „faktor radi u smjeru u kojem ga trgujemo&quot;.</p>
+<hr />
+<h2 id="2-sort-portfelj-i-prinos-faktora">2. Sort portfelj i prinos faktora</h2>
+<h3 id="intuicija">Intuicija</h3>
+<p>Najizravniji test: svaki mjesec poredaj dionice po signalu, kupi gornju trećinu, prodaj donju i pogledaj što se dogodi sljedeći mjesec. Glavna specifikacija slijedi Jensen, Kelly i Pedersen (JKP): tercili, s dvije zaštite od toga da rezultat nose sićušne ili nekoliko najvećih dionica.</p>
+<h3 id="postupak-za-jedan-mjesec">Postupak za jedan mjesec</h3>
+<ol type="1">
+<li><strong>Mikro granica.</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>20</mn></msub><annotation encoding="application/x-tex">c_{20}</annotation></semantics></math> = 20. percentil tržišne kapitalizacije NYSE dionica. Dionice s kapitalizacijom ≥ <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>20</mn></msub><annotation encoding="application/x-tex">c_{20}</annotation></semantics></math> su „ne-mikro&quot;.</li>
+<li><strong>Granice tercila.</strong> 33,3. i 66,7. percentil signala računaju se <em>samo na ne-mikro dionicama</em>, ali se zatim primjenjuju na sve dionice. Tako tisuće mikro dionica ne određuju gdje su granice.</li>
+<li><strong>Noge.</strong> Tercil 3 (visok signal) je long, tercil 1 (nizak signal) short. Za smjer <code>lower</code> noge se zamijene. Svaka noga mora imati najmanje 5 dionica.</li>
+<li><strong>Težine.</strong> Unutar noge težina je proporcionalna <em>ograničenoj</em> kapitalizaciji:</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mfrac><mrow><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="normal">cap</mtext><mi>i</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>c</mi><mn>80</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>∈</mo><mtext mathvariant="normal">noga</mtext></mrow></munder><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="normal">cap</mtext><mi>j</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>c</mi><mn>80</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+w_i = \frac{\min(\text{cap}_i,\ c_{80})}{\sum_{j \in \text{noga}} \min(\text{cap}_j,\ c_{80})}
+</annotation></semantics></math></p>
+<p>gdje je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>80</mn></msub><annotation encoding="application/x-tex">c_{80}</annotation></semantics></math> 80. percentil NYSE kapitalizacije. To je vrijednosno ponderiranje u kojem mega dionice ne mogu dominirati. Long težine zbrajaju se u +1, short u −1.</p>
+<ol start="5" type="1">
+<li><strong>Prinos faktora.</strong></li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><mi>L</mi></mrow></munder><msub><mi>w</mi><mi>i</mi></msub><mspace width="0.167em"></mspace><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mspace width="0.278em"></mspace><mo>−</mo><mspace width="0.278em"></mspace><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><mi>S</mi></mrow></munder><msub><mi>w</mi><mi>i</mi></msub><mspace width="0.167em"></mspace><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">
+f_{t+1} = \sum_{i \in L} w_i\, r_{i,t+1} \;-\; \sum_{i \in S} w_i\, r_{i,t+1}
+</annotation></semantics></math></p>
+<p>To je prinos portfelja s 1 USD long i 1 USD short, dakle bruto izloženost 2, neto 0.</p>
+<h3 id="kod">Kod</h3>
+<p><code>sort_one_date</code> u <code>R/alpha.R:64</code>, specifikacija iz konfiguracije:</p>
+<pre class="yaml"><code>- {name: &quot;jkp_tercile_capped_vw&quot;, groups: 3, breakpoint: &quot;nonmicro&quot;, weighting: &quot;capped_vw&quot;}</code></pre>
+<pre class="r"><code>micro_cut &lt;- quantile(cap_ref, cfg$alpha$nonmicro_nyse_percentile)      # NYSE p20
+ref &lt;- x[[feature]][x$market_cap &gt;= micro_cut]                          # granice na ne-mikro
+x[, group := assign_groups(get(feature), ref, 3L)]
+cap_limit &lt;- quantile(cap_ref, cfg$alpha$cap_weight_nyse_percentile)    # NYSE p80
+raw &lt;- pmin(z$market_cap, cap_limit); weight &lt;- raw / sum(raw)
+ret &lt;- sum(holdings$weight * target_values)                             # f_{t+1}</code></pre>
+<p>Pipeline računa i tri dodatne specifikacije (EW kvintili, VW kvintili s NYSE granicama, EW decili s NYSE granicama). One služe kao provjera robusnosti na detaljnoj stranici faktora; glavna tablica i ocjena koriste samo JKP tercile.</p>
+<hr />
+<h2 id="3-prosječni-prinos-volatilnost-i-sharpe">3. Prosječni prinos, volatilnost i Sharpe</h2>
+<p>Iz niza mjesečnih prinosa <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>f</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">f_1, \dots, f_n</annotation></semantics></math> u ocjenskom uzorku:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">‾</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>f</mi><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>σ</mi><mo>=</mo><msqrt><mrow><mfrac><mn>1</mn><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mi>t</mi></msub><mo>−</mo><mover><mi>f</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></msqrt><mo>,</mo><mspace width="2.0em"></mspace><mtext mathvariant="normal">Sharpe</mtext><mo>=</mo><msqrt><mn>12</mn></msqrt><mspace width="0.167em"></mspace><mfrac><mover><mi>f</mi><mo accent="true">‾</mo></mover><mi>σ</mi></mfrac></mrow><annotation encoding="application/x-tex">
+\bar f = \frac{1}{n}\sum_{t=1}^{n} f_t, \qquad
+\sigma = \sqrt{\frac{1}{n-1}\sum_{t=1}^{n} (f_t - \bar f)^2}, \qquad
+\text{Sharpe} = \sqrt{12}\,\frac{\bar f}{\sigma}
+</annotation></semantics></math></p>
+<ul>
+<li><strong>Prinos mj.</strong> je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>f</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar f</annotation></semantics></math>, prosječni mjesečni prinos long-short portfelja.</li>
+<li><strong>Sharpe</strong> je godišnji. Množi se s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>12</mn></msqrt><annotation encoding="application/x-tex">\sqrt{12}</annotation></semantics></math> jer prosjek raste s brojem mjeseci, a volatilnost s korijenom broja mjeseci (uz pretpostavku neovisnih mjeseci).</li>
+<li>Nerizična stopa se ne oduzima: long-short portfelj je samofinancirajući, pa je njegov prinos već višak prinosa.</li>
+</ul>
+<p><strong>Kako ga čitati.</strong> Sharpe mjeri prinos po jedinici rizika i ne ovisi o duljini uzorka. t-statistika mjeri koliko smo sigurni da prosjek nije nula i raste s duljinom uzorka. Veza je u sljedećem poglavlju.</p>
+<p>Kod (<code>R/alpha.R:534</code>):</p>
+<pre class="r"><code>sharpe_annual = sqrt(12) * mean(factor_return, na.rm = TRUE) / sd(factor_return, na.rm = TRUE)</code></pre>
+<hr />
+<h2 id="4-hac-t">4. HAC t</h2>
+<h3 id="intuicija-1">Intuicija</h3>
+<p>Pitanje je: je li prosječni prinos različit od nule ili je to slučajnost? Odgovor je omjer prosjeka i njegove standardne pogreške. Obična formula <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">\sigma/\sqrt{n}</annotation></semantics></math> pretpostavlja da su mjeseci međusobno neovisni. Ako nakon dobrog mjeseca češće slijedi dobar (pozitivna autokorelacija), niz sadrži manje neovisnih informacija nego što <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> sugerira, pa obična formula podcjenjuje nesigurnost i napuhuje t. HAC (<em>heteroskedasticity and autocorrelation consistent</em>, Newey–West) standardna pogreška to ispravlja.</p>
+<h3 id="algebra">Algebra</h3>
+<p>Neka su <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mi>t</mi></msub><mo>=</mo><msub><mi>f</mi><mi>t</mi></msub><mo>−</mo><mover><mi>f</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">e_t = f_t - \bar f</annotation></semantics></math>. Autokovarijanca na pomaku <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mi>k</mi></msub><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mi>k</mi><mo>+</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>e</mi><mi>t</mi></msub><mspace width="0.167em"></mspace><msub><mi>e</mi><mrow><mi>t</mi><mo>−</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+\gamma_k = \frac{1}{n}\sum_{t=k+1}^{n} e_t\, e_{t-k}
+</annotation></semantics></math></p>
+<p>Dugoročna varijanca s Bartlettovim težinama do pomaka <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">L = 6</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><msub><mi>γ</mi><mn>0</mn></msub><mo>+</mo><mn>2</mn><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>L</mi></munderover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mfrac><mi>k</mi><mrow><mi>L</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>γ</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">
+V = \gamma_0 + 2\sum_{k=1}^{L}\left(1 - \frac{k}{L+1}\right)\gamma_k
+</annotation></semantics></math></p>
+<p>Standardna pogreška, t i p:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">SE</mtext><mo>=</mo><msqrt><mfrac><mi>V</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac></msqrt><mo>,</mo><mspace width="2.0em"></mspace><mi>t</mi><mo>=</mo><mfrac><mover><mi>f</mi><mo accent="true">‾</mo></mover><mtext mathvariant="normal">SE</mtext></mfrac><mo>,</mo><mspace width="2.0em"></mspace><mi>p</mi><mo>=</mo><mn>2</mn><mspace width="0.167em"></mspace><mi>P</mi><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><msub><mi>T</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>&gt;</mo><mrow><mo stretchy="true" form="prefix">|</mo><mi>t</mi><mo stretchy="true" form="postfix">|</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\text{SE} = \sqrt{\frac{V}{n-1}}, \qquad t = \frac{\bar f}{\text{SE}}, \qquad
+p = 2\,P\big(T_{n-1} &gt; |t|\big)
+</annotation></semantics></math></p>
+<p>Tri detalja:</p>
+<ul>
+<li><strong>Bartlettove težine</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>k</mi><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>L</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 - k/(L+1)</annotation></semantics></math> linearno padaju (6/7, 5/7, …, 1/7). Jamče da je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math> nenegativan i daju manju težinu daljim pomacima, koji su procijenjeni s više šuma.</li>
+<li><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">L = 6</annotation></semantics></math></strong> znači da se uzima u obzir autokorelacija do pola godine (<code>alpha.hac_lag_monthly</code>).</li>
+<li><strong>Dijeljenje s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math></strong> umjesto <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> je korekcija za mali uzorak. Rezultat je numerički jednak <code>sandwich::NeweyWest(prewhite = FALSE, adjust = TRUE)</code> na regresiji samo s konstantom.</li>
+</ul>
+<p>Kad je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mi>k</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma_k = 0</annotation></semantics></math> za sve <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>≥</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k \ge 1</annotation></semantics></math>, formula se svodi na obični t.</p>
+<h3 id="veza-sa-sharpeom">Veza sa Sharpeom</h3>
+<p>Bez autokorelacije:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mfrac><mover><mi>f</mi><mo accent="true">‾</mo></mover><mrow><mi>σ</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow></mfrac><mo>=</mo><mfrac><mtext mathvariant="normal">Sharpe</mtext><msqrt><mn>12</mn></msqrt></mfrac><msqrt><mi>n</mi></msqrt><mo>=</mo><mtext mathvariant="normal">Sharpe</mtext><mo>×</mo><msqrt><mtext mathvariant="normal">broj godina</mtext></msqrt></mrow><annotation encoding="application/x-tex">
+t = \frac{\bar f}{\sigma/\sqrt{n}} = \frac{\text{Sharpe}}{\sqrt{12}}\sqrt{n}
+= \text{Sharpe}\times\sqrt{\text{broj godina}}
+</annotation></semantics></math></p>
+<p>Za 120 mjeseci faktor je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><mn>10</mn></msqrt><mo>=</mo><mn>3</mn><mo>,</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">\sqrt{10} = 3{,}16</annotation></semantics></math>. Primjer: <code>PV_AVG_DOLLAR_VOLUME_21D</code> ima Sharpe 1,01, pa bi obični t bio oko 3,2. Njegov HAC t je 4,04, viši, jer su mu mjesečni prinosi negativno autokorelirani (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>&lt;</mo><msub><mi>γ</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">V &lt; \gamma_0</annotation></semantics></math>). Obrnuto, faktor s trendovima u prinosima imao bi HAC t niži od običnog.</p>
+<h3 id="kod-1">Kod</h3>
+<p><code>hac_mean_values</code> u <code>R/statistics.R:1</code>:</p>
+<pre class="r"><code>average &lt;- mean(x); residual &lt;- x - average
+long_run_variance &lt;- sum(residual^2) / n
+for (k in seq_len(lag)) {
+  autocovariance &lt;- sum(residual[(k + 1L):n] * residual[seq_len(n - k)]) / n
+  long_run_variance &lt;- long_run_variance + 2 * (1 - k / (lag + 1)) * autocovariance
+}
+se &lt;- sqrt(max(0, long_run_variance / n * n / (n - 1L)))
+t  &lt;- average / se
+p  &lt;- 2 * pt(-abs(t), df = n - 1L)</code></pre>
+<p>Ista funkcija računa t za sort prinos, IC, partial IC, FMB koeficijent i FMP prinos. Stranica ima istu formulu u JavaScriptu (<code>hac</code> u <code>reports/site/index.html</code>), pa su brojevi za odabrane filtere izračunati jednako kao u pipelineu.</p>
+<hr />
+<h2 id="5-alfa-ocjene-faktora-ad">5. Alfa ocjene faktora (A–D)</h2>
+<p><span id="5-p-vrijednost-bh-q-by-q-i-ocjene"></span><span id="ocjene"></span></p>
+<p>Stupac <strong>Alfa</strong> u registru pokazuje koliko povijesni prinosi podupiru očekivani smjer faktora. Svaki mjesec uspoređuju se dvije skupine dionica. Jedna sadrži dionice kojima signal predviđa viši prinos (long), a druga one kojima predviđa niži prinos (short). Ocjenjuje se prosjek mjesečnih razlika <strong>long minus short, prije troškova trgovanja</strong>. CAPM alfa zasebna je mjera koja prinos prilagođava izloženosti tržištu.</p>
+<p>Ocjenu određuju dva broja. <strong>HAC t</strong> pokazuje koliko je prosječni prinos udaljen od nule u standardnim pogreškama, uz korekciju za povezanost prinosa kroz mjesece. Pozitivan t znači da je long skupina u prosjeku nadmašila short skupinu. <strong>BH q</strong> je p-vrijednost prilagođena za to što su istodobno testirani brojni faktori. Registar provjerava uvjete od vrha tablice i dodjeljuje prvu ocjenu čiji su uvjeti ispunjeni.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Ocjena</th>
+<th>Pravilo</th>
+<th>Kako je čitati</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>t ≥ 3 i BH q ≤ 0,05</td>
+<td>Pozitivan rezultat prolazi stroži prag višestrukog testiranja.</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>t ≥ 2 i BH q ≤ 0,10, nakon provjere za A</td>
+<td>Pozitivan rezultat prolazi blaži prag višestrukog testiranja.</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>t ≥ 1,5, nakon provjere za A i B</td>
+<td>Postoji naznaka pozitivnog učinka. Dokazi su preslabi za A ili B.</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>t &lt; 1,5 uz valjan test</td>
+<td>Rezultat može biti slabo pozitivan, blizu nule ili u suprotnom smjeru.</td>
+</tr>
+<tr>
+<td><strong>Bez ocjene</strong></td>
+<td>Nedostaje valjan rezultat ocjenskog testa</td>
+<td>Test nije uspio ili nema dovoljno podataka za dodjelu slova.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Primjer iz registra.</strong> Faktor <code>INT_KNOWLEDGE_CAPITAL_TO_BOOK</code> imao je t = 3,62. Sam t prelazi prag za A, ali njegov BH q = 0,405 prelazi i 0,05 i 0,10. Zato dobiva <strong>C</strong>. Za usporedbu, <code>PV_AVG_DOLLAR_VOLUME_21D</code> imao je t = 1,20 kroz 120 mjeseci od 2015. do 2024. Taj rezultat dobiva <strong>D</strong> već po pragu za t. Oba primjera potječu iz objave od 19. studenoga 2026.</p>
+<p><strong>Koji uzorak određuje slovo?</strong> U toj objavi dionice se rangiraju unutar tadašnjih članica Russella 3000, prema sastavu ETF-a IWV. Za ocjenu treba najmanje 60 mjesečnih prinosa u ocjenskom razdoblju faktora. Ako je smjer naučen na podacima do kraja 2014., ocjenjuju se mjeseci od 2015. Promjena razdoblja, strane ili univerzuma u registru mijenja prikazanu t-statistiku, dok slovo i BH q ostaju iz izvornog ocjenskog testa. Neto prinos, troškovi, beta, Sharpe i IC mogu pomoći u odluci o primjeni faktora, ali ne ulaze u pravilo za slovo.</p>
+<h3 id="problem-višestrukog-testiranja">Problem višestrukog testiranja</h3>
+<p>p-vrijednost za <em>jedan</em> faktor govori koliko je vjerojatno dobiti barem toliko velik apsolutni t ako je očekivani prinos nula. Kad bi svih 920 faktora imalo očekivani prinos nula, u prosjeku bi ih <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>920</mn><mo>×</mo><mn>0</mn><mo>,</mo><mn>05</mn><mo>=</mo><mn>46</mn></mrow><annotation encoding="application/x-tex">920 \times 0{,}05 = 46</annotation></semantics></math> slučajno imalo <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&lt;</mo><mn>0</mn><mo>,</mo><mn>05</mn></mrow><annotation encoding="application/x-tex">p &lt; 0{,}05</annotation></semantics></math>. Kad biramo najbolje iz velikog skupa, p-vrijednost zato više nije dovoljna.</p>
+<h3 id="stopa-lažnih-otkrića-fdr">Stopa lažnih otkrića (FDR)</h3>
+<p>Umjesto pitanja „je li ovaj faktor slučajan&quot; postavlja se pitanje o cijelom popisu: ako proglasim značajnima određen skup faktora, koliki udio tog skupa su lažna otkrića?</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">FDR</mtext><mo>=</mo><mi>E</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">[</mo><mfrac><mtext mathvariant="normal">broj lažnih otkrića</mtext><mtext mathvariant="normal">broj otkrića</mtext></mfrac><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+\text{FDR} = E\!\left[\frac{\text{broj lažnih otkrića}}{\text{broj otkrića}}\right]
+</annotation></semantics></math></p>
+<p>q-vrijednost faktora je najmanja ciljana stopa FDR-a uz koju bi taj faktor još bio na popisu. Praktično: ako uzmeš sve faktore s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>≤</mo><mn>0</mn><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">q \le 0{,}10</annotation></semantics></math>, očekuje se da je najviše 10 % njih lažno.</p>
+<h3 id="benjaminihochberg-bh">Benjamini–Hochberg (BH)</h3>
+<p>Poredaj p-vrijednosti uzlazno: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo>≤</mo><msub><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo>≤</mo><mi>…</mi><mo>≤</mo><msub><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">p_{(1)} \le p_{(2)} \le \dots \le p_{(m)}</annotation></semantics></math>. Tada je</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>B</mi><mi>H</mi></mrow></msubsup><mo>=</mo><munder><mo>min</mo><mrow><mi>j</mi><mo>≥</mo><mi>i</mi></mrow></munder><mspace width="0.222em"></mspace><mfrac><mi>m</mi><mi>j</mi></mfrac><mspace width="0.167em"></mspace><msub><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">
+q^{BH}_{(i)} = \min_{j \ge i}\ \frac{m}{j}\, p_{(j)}
+</annotation></semantics></math></p>
+<p>Faktor <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>/</mi><mi>j</mi></mrow><annotation encoding="application/x-tex">m/j</annotation></semantics></math> je korekcija: najbolji faktor (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">j = 1</annotation></semantics></math>) kažnjen je s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>, kao kod Bonferronija, ali svaki sljedeći manje. Minimum po <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>≥</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">j \ge i</annotation></semantics></math> osigurava da q ne raste kad idemo prema boljim faktorima.</p>
+<h3 id="benjaminiyekutieli-by">Benjamini–Yekutieli (BY)</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>B</mi><mi>Y</mi></mrow></msubsup><mo>=</mo><munder><mo>min</mo><mrow><mi>j</mi><mo>≥</mo><mi>i</mi></mrow></munder><mspace width="0.222em"></mspace><mfrac><mrow><mi>m</mi><mo>⋅</mo><mi>c</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mi>j</mi></mfrac><mspace width="0.167em"></mspace><msub><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>c</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>m</mi></munderover><mfrac><mn>1</mn><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">
+q^{BY}_{(i)} = \min_{j \ge i}\ \frac{m \cdot c(m)}{j}\, p_{(j)}, \qquad c(m) = \sum_{k=1}^{m}\frac{1}{k}
+</annotation></semantics></math></p>
+<p>Za <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mn>897</mn></mrow><annotation encoding="application/x-tex">m = 897</annotation></semantics></math> je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><mn>7</mn><mo>,</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">c(m) \approx 7{,}4</annotation></semantics></math>, pa je BY oko 7 puta stroži.</p>
+<h3 id="primjer-s-pet-testova">Primjer s pet testova</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Rang <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>⋅</mo><mi>m</mi><mi>/</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">p \cdot m / i</annotation></semantics></math></th>
+<th>BH q</th>
+<th>BY q (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>=</mo><mn>2</mn><mo>,</mo><mn>283</mn></mrow><annotation encoding="application/x-tex">c = 2{,}283</annotation></semantics></math>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0,001</td>
+<td>0,005</td>
+<td>0,005</td>
+<td>0,011</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0,008</td>
+<td>0,020</td>
+<td>0,020</td>
+<td>0,046</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0,039</td>
+<td>0,065</td>
+<td><strong>0,051</strong></td>
+<td>0,117</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0,041</td>
+<td>0,051</td>
+<td>0,051</td>
+<td>0,117</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0,200</td>
+<td>0,200</td>
+<td>0,200</td>
+<td>0,457</td>
+</tr>
+</tbody>
+</table></div>
+<p>Treći test dobiva q četvrtog (0,051 umjesto 0,065): ako prihvatimo četvrti, automatski prihvaćamo i treći, koji je bolji.</p>
+<h3 id="zašto-bh-a-ne-by">Zašto BH, a ne BY</h3>
+<p>Razlika je u tome kakvu zavisnost među testovima metoda podnosi.</p>
+<ul>
+<li><strong>BH</strong> drži ciljanu stopu kad su testovi neovisni ili pozitivno zavisni (kad je jedan t visok, drugi su vjerojatnije isto visoki). Faktori su tipično takvi: dijele iste dionice, iste mjesece i često isti temeljni signal.</li>
+<li><strong>BY</strong> vrijedi uz bilo kakvu zavisnost, uključujući konstruirane najgore slučajeve. Cijena je faktor <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">c(m)</annotation></semantics></math>.</li>
+</ul>
+<p>Chen (2022) i drugi pokazuju da se taj najgori slučaj u podacima o prinosima ne pojavljuje i da je BH robustan i na mješavinu pozitivnih i negativnih korelacija, pa BY daje stvarni FDR daleko ispod ciljanog. Za dodjelu slova koristi se BH q. BY q prikazuje koliko je zaključak osjetljiv na strožu korekciju.</p>
+<p>Nekoliko dobro ocijenjenih faktora može mjeriti isti ekonomski signal. Primjer su inačice istog pokazatelja likvidnosti s različitim duljinama prozora.</p>
+<h3 id="kod-2">Kod</h3>
+<p><code>apply_by_correction</code> u <code>R/statistics.R:72</code>:</p>
+<pre class="r"><code>summary[ok, bh_q := stats::p.adjust(get(p_col), method = &quot;BH&quot;)]
+summary[ok, by_q := stats::p.adjust(get(p_col), method = &quot;BY&quot;)]</code></pre>
+<p>Korekcija obuhvaća sve faktore s valjanim testom u istom ocjenjivanju. U objavi od 19. studenoga 2026. ocijenjeno je 920 faktora.</p>
+<hr />
+<h2 id="6-turnover-neto-prinos-i-break-even-trošak">6. Turnover, neto prinos i break-even trošak</h2>
+<h3 id="intuicija-2">Intuicija</h3>
+<p>Faktor s lijepim bruto prinosom može biti bezvrijedan ako svaki mjesec treba zamijeniti cijeli portfelj. Turnover mjeri koliki dio portfelja treba istrgovati pri rebalansu.</p>
+<h3 id="turnover-s-driftom">Turnover s driftom</h3>
+<p>Naivno bi se uspoređivale ciljne težine ovog i prošlog mjeseca. To je pogrešno: tijekom mjeseca cijene se miču, pa portfelj na dan rebalansa više nema prošlomjesečne ciljne težine. Zato se prvo izračunaju <em>driftane</em> težine, odvojeno po nozi:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>w</mi><mo accent="true">̃</mo></mover><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mtext mathvariant="normal">sgn</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.167em"></mspace><mfrac><mrow><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">|</mo></mrow><mspace width="0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>∈</mo><mtext mathvariant="normal">noga</mtext></mrow></munder><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>w</mi><mrow><mi>j</mi><mo>,</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">|</mo></mrow><mspace width="0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msub><mi>r</mi><mrow><mi>j</mi><mo>,</mo><mi>t</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\tilde w_{i,t} = \text{sgn}(w_{i,t-1})\,
+\frac{|w_{i,t-1}|\,(1 + r_{i,t})}{\sum_{j \in \text{noga}} |w_{j,t-1}|\,(1 + r_{j,t})}
+</annotation></semantics></math></p>
+<p>Svaka noga se nakon drifta ponovno skalira na 1 USD, što odgovara pretpostavci da se portfelj svaki mjesec vraća na 1 USD long i 1 USD short. Turnover je tada</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">TO</mtext><mi>t</mi></msub><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><munder><mo>∑</mo><mi>i</mi></munder><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">|</mo><mspace width="0.167em"></mspace><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>−</mo><msub><mover><mi>w</mi><mo accent="true">̃</mo></mover><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mspace width="0.167em"></mspace><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">
+\text{TO}_t = \frac{1}{2}\sum_i \big|\, w_{i,t} - \tilde w_{i,t} \,\big|
+</annotation></semantics></math></p>
+<p>gdje zbroj ide po svim dionicama koje su u starom ili novom portfelju (težina 0 ako dionice nema).</p>
+<p><strong>Jedinice.</strong> Unutar jedne noge kupnje i prodaje su jednake, pa je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><mrow><mo stretchy="true" form="prefix">|</mo><mi>Δ</mi><mi>w</mi><mo stretchy="true" form="postfix">|</mo></mrow></mrow><annotation encoding="application/x-tex">\sum|\Delta w|</annotation></semantics></math> te noge dvostruki jednosmjerni turnover. Zato je</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TO</mtext><mo>=</mo><mtext mathvariant="normal">jednosmjerni turnover long noge</mtext><mo>+</mo><mtext mathvariant="normal">jednosmjerni turnover short noge</mtext></mrow><annotation encoding="application/x-tex">
+\text{TO} = \text{jednosmjerni turnover long noge} + \text{jednosmjerni turnover short noge}
+</annotation></semantics></math></p>
+<p>Raspon je 0 do 2. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TO</mtext><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\text{TO} = 2</annotation></semantics></math> znači potpunu zamjenu obje noge, a <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TO</mtext><mo>=</mo><mn>0</mn><mo>,</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\text{TO} = 0{,}2</annotation></semantics></math> da se u prosjeku mijenja 10 % svake noge. Prvi mjesec ima turnover 0 (početna kupnja se ne broji).</p>
+<p>Primjer: long noga drži A i B po 50 %. A naraste 20 %, B ostane isti, pa su driftane težine 54,5 % i 45,5 %. Ako su nove ciljne težine opet 50/50, treba prodati 4,5 % A i kupiti 4,5 % B: jednosmjerni turnover noge je 0,045.</p>
+<h3 id="neto-prinos">Neto prinos</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>f</mi><mi>t</mi><mtext mathvariant="normal">neto</mtext></msubsup><mo>=</mo><msub><mi>f</mi><mi>t</mi></msub><mo>−</mo><mi>c</mi><mo>⋅</mo><msub><mtext mathvariant="normal">TO</mtext><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>c</mi><mo>=</mo><mn>25</mn><mspace width="0.222em"></mspace><mtext mathvariant="normal">bps</mtext><mo>=</mo><mn>0</mn><mo>,</mo><mn>0025</mn></mrow><annotation encoding="application/x-tex">
+f^{\text{neto}}_t = f_t - c \cdot \text{TO}_t, \qquad c = 25\ \text{bps} = 0{,}0025
+</annotation></semantics></math></p>
+<p>Jedna jedinica turnovera znači 1 USD prodaje i 1 USD kupnje, dakle 2 USD prometa. Trošak od 25 bps po jedinici turnovera zato odgovara 12,5 bps po istrgovanom dolaru. Pipeline računa i verzije s 10 i 50 bps.</p>
+<p>Što <em>nije</em> uključeno: trošak posudbe za short, tržišni utjecaj, i to da su mikro dionice skuplje za trgovanje od prosjeka. Neto prinos je zato donja letvica razuma, ne procjena ostvarivog prinosa.</p>
+<h3 id="break-even-trošak">Break-even trošak</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>c</mi><mo>*</mo></msup><mo>=</mo><mn>10</mn><mspace width="0.167em"></mspace><mn>000</mn><mo>×</mo><mfrac><mover><mi>f</mi><mo accent="true">‾</mo></mover><mover><mtext mathvariant="normal">TO</mtext><mo accent="true">¯</mo></mover></mfrac><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mtext mathvariant="normal">(bps)</mtext></mrow><annotation encoding="application/x-tex">
+c^{*} = 10\,000 \times \frac{\bar f}{\overline{\text{TO}}}\ \ \text{(bps)}
+</annotation></semantics></math></p>
+<p>Trošak po jedinici turnovera uz koji bi neto prinos bio točno nula. Ako je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>c</mi><mo>*</mo></msup><annotation encoding="application/x-tex">c^{*}</annotation></semantics></math> 300 bps, faktor podnosi realne troškove; ako je 30 bps, ne podnosi.</p>
+<h3 id="kod-3">Kod</h3>
+<p><code>compute_turnover_drift</code> i <code>drift_weights</code> u <code>R/alpha_frequency.R:111</code>, neto u <code>R/alpha.R:483</code>:</p>
+<pre class="r"><code>x[, growth := pmax(0, 1 + security_return)]
+x[, old_weight := sign(weight) * abs(weight) * growth / sum(abs(weight) * growth), by = sign(weight)]
+value &lt;- 0.5 * sum(abs(both$new_weight - both$old_weight))
+
+returns[, factor_return_net_25bps := factor_return - (25 / 10000) * turnover]</code></pre>
+<hr />
+<h2 id="7-long-i-short-strana">7. Long i short strana</h2>
+<h3 id="intuicija-3">Intuicija</h3>
+<p>Long-short prinos ne govori odakle dolazi zarada. Ako sve dolazi iz short noge u sitnim dionicama, faktor je u praksi teško iskoristiv, jer je short skup ili nedostupan. Zato se prinos rastavlja na dvije strane u odnosu na tržište.</p>
+<h3 id="algebra-1">Algebra</h3>
+<p>Neka su <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mi>t</mi></msub><annotation encoding="application/x-tex">L_t</annotation></semantics></math> i <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>S</mi><mi>t</mi></msub><annotation encoding="application/x-tex">S_t</annotation></semantics></math> prinosi long i short noge (obje kao portfelji s pozitivnim težinama) i <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>M</mi><mi>t</mi></msub><annotation encoding="application/x-tex">M_t</annotation></semantics></math> vrijednosno ponderirani prinos cijelog univerzuma za isti ciljni prinos. Tada</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mo>=</mo><msub><mi>L</mi><mi>t</mi></msub><mo>−</mo><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><munder><munder><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>L</mi><mi>t</mi></msub><mo>−</mo><msub><mi>M</mi><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">long strana</mtext></munder><mo>+</mo><munder><munder><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>M</mi><mi>t</mi></msub><mo>−</mo><msub><mi>S</mi><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">short strana</mtext></munder></mrow><annotation encoding="application/x-tex">
+f_t = L_t - S_t = \underbrace{(L_t - M_t)}_{\text{long strana}} + \underbrace{(M_t - S_t)}_{\text{short strana}}
+</annotation></semantics></math></p>
+<ul>
+<li><strong>Prinos noge</strong> na stranici je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>L</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar L</annotation></semantics></math> ili <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>S</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar S</annotation></semantics></math> (sirovi prinos dionica u nozi).</li>
+<li><strong>Višak nad tržištem</strong> je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>L</mi><mo>−</mo><mi>M</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{L - M}</annotation></semantics></math> za long, odnosno <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>M</mi><mo>−</mo><mi>S</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{M - S}</annotation></semantics></math> za short. HAC t i Sharpe u prikazu jedne strane odnose se na taj višak.</li>
+<li><strong>Turnover noge</strong> je jednosmjerni turnover te noge; dva turnovera nogu zbrajaju se u turnover cijelog portfelja.</li>
+<li><strong>Neto</strong> je višak umanjen za 25 bps po jedinici turnovera noge.</li>
+</ul>
+<p>Dvije strane se po konstrukciji zbrajaju točno u long-short prinos (provjera pri izgradnji stranice: najveća razlika 6,9e-17).</p>
+<h3 id="kod-4">Kod</h3>
+<p>Noge: <code>scripts/build_size_group_returns.R</code>. Tržište: <code>scripts/build_market_return.R</code>:</p>
+<pre class="r"><code>ret &lt;- long[, .(factor_return = sum(wn * target_return),
+                long_return  =  sum(wn[wn &gt; 0] * target_return[wn &gt; 0]),
+                short_return = -sum(wn[wn &lt; 0] * target_return[wn &lt; 0])), by = .(size_group, trade_date)]
+
+market &lt;- x[, .(market_return = sum(market_cap * forward_return_1m) / sum(market_cap)), by = .(group, trade_date)]</code></pre>
+<hr />
+<h2 id="8-ic-i-partial-ic">8. IC i partial IC</h2>
+<h3 id="ic-intuicija">IC: intuicija</h3>
+<p>Sort koristi samo krajnje trećine i ovisi o težinama. IC (<em>information coefficient</em>) pita nešto jednostavnije i koristi sve dionice: jesu li dionice s višim signalom u prosjeku imale viši prinos sljedeći mjesec? To je rang-korelacija u presjeku.</p>
+<h3 id="ic-algebra">IC: algebra</h3>
+<p>Za svaki mjesec <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>, preko svih dionica s valjanim signalom i prinosom:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">IC</mtext><mi>t</mi></msub><mo>=</mo><mtext mathvariant="normal">corr</mtext><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">rang</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="0.222em"></mspace><mtext mathvariant="normal">rang</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\text{IC}_t = \text{corr}\big(\text{rang}(s_{i,t}),\ \text{rang}(r_{i,t+1})\big)
+</annotation></semantics></math></p>
+<p>Spearman (rangovi) umjesto Pearsona jer ne ovisi o ekstremnim vrijednostima ni o obliku veze, samo o poretku. Dionice su jednako ponderirane, pa IC, za razliku od sorta, snažno odražava male dionice kojih je najviše.</p>
+<p>Iz niza mjesečnih IC-a:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mtext mathvariant="normal">IC</mtext><mo accent="true">¯</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munder><mo>∑</mo><mi>t</mi></munder><msub><mtext mathvariant="normal">IC</mtext><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mtext mathvariant="normal">IC t</mtext><mo>=</mo><mfrac><mover><mtext mathvariant="normal">IC</mtext><mo accent="true">¯</mo></mover><msub><mtext mathvariant="normal">SE</mtext><mrow><mi>H</mi><mi>A</mi><mi>C</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">
+\overline{\text{IC}} = \frac{1}{n}\sum_t \text{IC}_t, \qquad
+\text{IC t} = \frac{\overline{\text{IC}}}{\text{SE}_{HAC}}
+</annotation></semantics></math></p>
+<p>s istom HAC formulom kao u poglavlju 4. <strong>IC t</strong> ne mjeri koliko je IC velik, nego koliko je <em>stabilan</em> kroz mjesece. Tipične veličine: prosječni IC od 0,02–0,03 je već solidan signal; iznad 0,05 je rijetkost.</p>
+<h3 id="partial-ic-intuicija">Partial IC: intuicija</h3>
+<p>Visok IC može biti posuđen. Ako signal samo bira male ili volatilne dionice, njegov IC je zapravo IC veličine ili volatilnosti. Partial IC pita: postoji li veza signala i prinosa <em>nakon</em> što iz oboje uklonimo ono što objašnjavaju poznate karakteristike i industrija?</p>
+<h3 id="partial-ic-algebra">Partial IC: algebra</h3>
+<p>Kontrole su veličina, vrijednost (book-to-market), profitabilnost (operativna dobit kroz imovinu), investicije (rast imovine), momentum, beta, rezidualna volatilnost i likvidnost, te industrija. Prvih pet su karakteristike iza Fama–French pet faktora i momentuma. Tri fundamentalne kontrole nedostaju za dio dionica; tamo se postavljaju na prosjek presjeka, pa njihovo dodavanje ne smanjuje broj dionica u izračunu. Za svaki mjesec:</p>
+<ol type="1">
+<li>Signal, prinos i svaka kontrola pretvore se u rangove i standardiziraju (z-score rangova).</li>
+<li>Rang signala regresira se na konstantu, rangirane kontrole i industrijske dummy varijable; reziduali su <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>ε</mi><mi>i</mi><mi>s</mi></msubsup><annotation encoding="application/x-tex">\varepsilon^{s}_i</annotation></semantics></math>.</li>
+<li>Rang prinosa regresira se na iste varijable; reziduali su <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>ε</mi><mi>i</mi><mi>r</mi></msubsup><annotation encoding="application/x-tex">\varepsilon^{r}_i</annotation></semantics></math>.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">partial IC</mtext><mi>t</mi></msub><mo>=</mo><mtext mathvariant="normal">corr</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>ε</mi><mi>s</mi></msup><mo>,</mo><mspace width="0.222em"></mspace><msup><mi>ε</mi><mi>r</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{partial IC}_t = \text{corr}(\varepsilon^{s},\ \varepsilon^{r})</annotation></semantics></math> (Pearson).</li>
+</ol>
+<p>Po Frisch–Waugh–Lovell teoremu to je parcijalna korelacija ranga signala i ranga prinosa uz dane kontrole, tj. Spearmanova parcijalna korelacija. Ključno je da se kontrole uklanjaju iz <em>obje</em> strane (<code>rank_residual_both</code>); kad bi se uklonile samo iz prinosa, signal bi i dalje nosio izloženost kontrolama.</p>
+<p><strong>Kako čitati razliku.</strong> IC t visok, a partial IC t nizak: signal je uglavnom prerušena veličina, likvidnost ili industrija. Oba visoka: signal nosi informaciju koju standardne karakteristike nemaju. Likvidnosni faktori su tipičan primjer prvog slučaja (<code>PV_AVG_DOLLAR_VOLUME_21D</code>: IC t 4,33, partial IC t 0,61), jer je likvidnost sama jedna od kontrola.</p>
+<h3 id="kod-5">Kod</h3>
+<p><code>compute_ics</code> i <code>partial_spearman_ic</code> u <code>R/alpha.R:246</code>:</p>
+<pre class="r"><code>raw &lt;- safe_cor(get(feature), get(return_col), method = &quot;spearman&quot;)          # IC_t
+
+rank_z &lt;- function(v) zscore_vector(rank(v, ties.method = &quot;average&quot;))
+mm &lt;- cbind(intercept = 1, ranked_controls, industry_dummies)
+signal_residual &lt;- lm.fit(mm, rank_z(z[[feature]]))$residuals
+return_residual &lt;- lm.fit(mm, rank_z(z[[return_col]]))$residuals
+ic &lt;- safe_cor(signal_residual, return_residual, method = &quot;pearson&quot;)         # partial IC_t</code></pre>
+<hr />
+<h2 id="9-famamacbeth">9. Fama–MacBeth</h2>
+<h3 id="intuicija-4">Intuicija</h3>
+<p>IC govori postoji li veza, ali ne i koliko je velika u prinosu. Fama–MacBeth (FMB) regresija daje premiju: koliko je u prosjeku viši mjesečni prinos dionice čiji je signal viši za jednu standardnu devijaciju.</p>
+<h3 id="algebra-2">Algebra</h3>
+<p>Za svaki mjesec <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> procjenjuje se presječna OLS regresija</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi>a</mi><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mi>t</mi></msub><mspace width="0.167em"></mspace><msub><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>ε</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">
+r_{i,t+1} = a_t + b_t\, z_{i,t} + \varepsilon_{i,t+1}
+</annotation></semantics></math></p>
+<p>gdje je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">z_{i,t}</annotation></semantics></math> signal winsoriziran na 1. i 99. percentilu pa standardiziran (prosjek 0, standardna devijacija 1) unutar mjeseca. Premija i njezin t su</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munder><mo>∑</mo><mi>t</mi></munder><msub><mi>b</mi><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mtext mathvariant="normal">FMB t</mtext><mo>=</mo><mfrac><mover><mi>b</mi><mo accent="true">‾</mo></mover><mrow><msub><mtext mathvariant="normal">SE</mtext><mrow><mi>H</mi><mi>A</mi><mi>C</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>b</mi><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\bar b = \frac{1}{n}\sum_t b_t, \qquad \text{FMB t} = \frac{\bar b}{\text{SE}_{HAC}(b_t)}
+</annotation></semantics></math></p>
+<p>Bit postupka je da se nesigurnost ne uzima iz jedne velike regresije, nego iz toga koliko <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>t</mi></msub><annotation encoding="application/x-tex">b_t</annotation></semantics></math> varira od mjeseca do mjeseca. Time je automatski uzeta u obzir korelacija prinosa dionica unutar istog mjeseca, koja bi u združenoj regresiji napuhala t.</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>t</mi></msub><annotation encoding="application/x-tex">b_t</annotation></semantics></math> je ujedno prinos jednog portfelja: s jednim regresorom je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mi>t</mi></msub><mo>=</mo><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mi>r</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mi>/</mi><msub><mo>∑</mo><mi>i</mi></msub><msubsup><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">b_t = \sum_i z_{i,t}\, r_{i,t+1} / \sum_i z_{i,t}^2</annotation></semantics></math>, dakle long-short portfelj s težinama proporcionalnim <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>. FMB je zato sort koji koristi sve dionice, jednako ponderirano i linearno po signalu.</p>
+<h3 id="razlike-prema-ostalim-testovima">Razlike prema ostalim testovima</h3>
+<ul>
+<li>Regresija je univarijatna (bez kontrola) i jednako ponderirana, pa je osjetljiva na mikro dionice.</li>
+<li>Koristi sirovi prinos, ne rang, pa je osjetljiva na ekstremne prinose.</li>
+<li>Zato se FMB t često razlikuje od sort t; na stranici se za odabrane filtere ne preračunava (prikazan je sivo, s vrijednošću za cijeli ocjenski uzorak).</li>
+</ul>
+<h3 id="odnos-prema-čistom-fmp-u-barra">Odnos prema čistom FMP-u (Barra)</h3>
+<p>FMB i čisti FMP iz odjeljka 10 isti su postupak: regresija prinosa na karakteristike u presjeku svakog mjeseca, pa prosjek koeficijenata kroz vrijeme. Razlikuju se u tome što ulazi u regresiju.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>Fama–MacBeth</th>
+<th>Čisti FMP (Barra)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regresori</td>
+<td>samo kandidat</td>
+<td>kandidat, osam stilova, industrije</td>
+</tr>
+<tr>
+<td>Ponderi</td>
+<td>jednaki (OLS)</td>
+<td>WLS</td>
+</tr>
+<tr>
+<td>Što koeficijent mjeri</td>
+<td>ukupnu premiju karakteristike</td>
+<td>premiju koja ostaje nakon poznatih faktora</td>
+</tr>
+</tbody>
+</table></div>
+<p>FMB dakle kaže zarađuje li karakteristika sama po sebi, a čisti FMP zarađuje li i kad se kontroliraju poznati izvori prinosa. Čisti FMP je multivarijatni Fama–MacBeth.</p>
+<h3 id="kod-6">Kod</h3>
+<p><code>fama_macbeth</code> u <code>R/alpha.R:206</code>:</p>
+<pre class="r"><code>z   &lt;- zscore_vector(winsorize_vector(get(feature)[ok]))
+fit &lt;- lm.fit(cbind(intercept = 1, signal = z[valid]), get(return_col)[ok][valid])
+beta &lt;- fit$coefficients[[2L]]                                               # b_t</code></pre>
+<hr />
+<h2 id="10-čisti-fmp-barra">10. Čisti FMP (Barra)</h2>
+<h3 id="intuicija-5">Intuicija</h3>
+<p>Sort portfelj nosi i sve ono što je sa signalom korelirano: nagib prema malim dionicama, prema nekoj industriji, prema visokoj beti. Čisti <em>factor-mimicking portfolio</em> (FMP) je portfelj koji ima jediničnu izloženost signalu, a <em>nultu</em> izloženost tržištu, osam stilskih faktora i svim industrijama. Njegov prinos je ono što signal donosi povrh poznatih izvora rizika. To je logika Barra modela rizika.</p>
+<h3 id="algebra-3">Algebra</h3>
+<p>Za svaki mjesec procjenjuje se presječna regresija ponderiranih najmanjih kvadrata (WLS)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mi>X</mi><mi>β</mi><mo>+</mo><mi>ε</mi><mo>,</mo><mspace width="2.0em"></mspace><mover><mi>β</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>X</mi><mi>⊤</mi></msup><mi>W</mi><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>X</mi><mi>⊤</mi></msup><mi>W</mi><mspace width="0.167em"></mspace><mi>r</mi></mrow><annotation encoding="application/x-tex">
+r = X\beta + \varepsilon, \qquad
+\hat\beta = (X^\top W X)^{-1} X^\top W\, r
+</annotation></semantics></math></p>
+<p>Stupci matrice <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>:</p>
+<ul>
+<li><strong>tržište</strong>: konstanta 1;</li>
+<li><strong>kandidat</strong>: signal, winsoriziran na 1 %/99 % i standardiziran tako da mu je prosjek ponderiran kapitalizacijom jednak nuli;</li>
+<li><strong>stilovi</strong>: veličina, vrijednost, profitabilnost, investicije i momentum (karakteristike iza Fama–French pet faktora i momentuma), te beta, rezidualna volatilnost i likvidnost (jednako standardizirani; ako je kandidat sam jedan od tih stilova, taj se stil izostavlja). Kandidat se dakle ubacuje među poznate faktore i njegov prinos je ono što ostane nakon njih;</li>
+<li><strong>industrije</strong>: dummy varijable.</li>
+</ul>
+<p>Matrica <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>W</mi><annotation encoding="application/x-tex">W</annotation></semantics></math> je dijagonalna s težinama <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msubsup><mi>σ</mi><mi>i</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">1/\sigma_i^2</annotation></semantics></math>, gdje je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mi>i</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma_i^2</annotation></semantics></math> EWMA varijanca dnevnih prinosa dionice (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>94</mn></mrow><annotation encoding="application/x-tex">\lambda = 0{,}94</annotation></semantics></math>) do datuma formiranja, odrezana na 5. i 95. percentilu. Bučnije dionice dobivaju manju težinu, što daje efikasniju procjenu.</p>
+<p>Koeficijent uz kandidata je linearna funkcija prinosa, dakle prinos portfelja:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>c</mi></msub><mo>=</mo><msup><mi>h</mi><mi>⊤</mi></msup><mi>r</mi><mo>,</mo><mspace width="2.0em"></mspace><mi>h</mi><mo>=</mo><mi>W</mi><mi>X</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>X</mi><mi>⊤</mi></msup><mi>W</mi><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msub><mi>e</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">
+\hat\beta_c = h^\top r, \qquad h = W X (X^\top W X)^{-1} e_c
+</annotation></semantics></math></p>
+<p>gdje je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>c</mi></msub><annotation encoding="application/x-tex">e_c</annotation></semantics></math> jedinični vektor na mjestu kandidata. Množenjem slijeva s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>X</mi><mi>⊤</mi></msup><annotation encoding="application/x-tex">X^\top</annotation></semantics></math> dobiva se ključno svojstvo:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>X</mi><mi>⊤</mi></msup><mi>h</mi><mo>=</mo><msub><mi>e</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">
+X^\top h = e_c
+</annotation></semantics></math></p>
+<p>Red po red to znači:</p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>h</mi><mi>i</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\sum_i h_i = 0</annotation></semantics></math>: portfelj je dolarski neutralan (nulta izloženost tržištu);</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>h</mi><mi>i</mi></msub><msub><mi>z</mi><mi>i</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sum_i h_i z_i = 1</annotation></semantics></math>: jedinična izloženost kandidatu;</li>
+<li>nulta izloženost svakom stilu i svakoj industriji.</li>
+</ul>
+<p>Među svim portfeljima s tim svojstvima, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math> ima najmanju varijancu uz pretpostavljene specifične varijance. Zato se zove „čisti&quot; faktor.</p>
+<h3 id="skaliranje-na-trgovinski-portfelj">Skaliranje na trgovinski portfelj</h3>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math> ima proizvoljnu veličinu (ovisi o jedinicama signala), pa se prinos skalira na 1 USD long i 1 USD short:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>f</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi>F</mi><mi>M</mi><mi>P</mi></mrow></msubsup><mo>=</mo><mfrac><mrow><mn>2</mn><mspace width="0.167em"></mspace><msup><mi>h</mi><mi>⊤</mi></msup><mi>r</mi></mrow><mrow><munder><mo>∑</mo><mi>i</mi></munder><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>h</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+f^{FMP}_{t+1} = \frac{2\, h^\top r}{\sum_i |h_i|}
+</annotation></semantics></math></p>
+<p>Budući da je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><msub><mi>h</mi><mi>i</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\sum h_i = 0</annotation></semantics></math>, long i short strana imaju svaka bruto <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>h</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\sum|h_i|/2</annotation></semantics></math>, pa dijeljenje s tim daje noge od po 1 USD. Tako je FMP prinos usporediv sa sort prinosom.</p>
+<p>Iz mjesečnog niza <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mrow><mi>F</mi><mi>M</mi><mi>P</mi></mrow></msup><annotation encoding="application/x-tex">f^{FMP}</annotation></semantics></math> računaju se prosjek, HAC t, Sharpe (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>12</mn></msqrt><annotation encoding="application/x-tex">\sqrt{12}</annotation></semantics></math>), turnover (drift, isto kao u poglavlju 6) i neto uz 25 bps.</p>
+<h3 id="jednostavni-fmp">Jednostavni FMP</h3>
+<p>Graf <em>Barra · čisti i jednostavni FMP</em> uz čisti FMP prikazuje i jednostavni. On dolazi iz iste regresije s istim ponderima, ali su u njoj samo tržište i kandidat, bez stilova i industrija. Portfelj ima jediničnu izloženost signalu i nosi sve što je sa signalom korelirano. Skaliran je jednako (1 USD long i 1 USD short), pa su linije usporedive:</p>
+<ul>
+<li>linije blizu jedna drugoj: prinos ne dolazi iz stilova ni industrija;</li>
+<li>jednostavni raste, a čisti stoji: faktor zarađuje preko poznatih premija;</li>
+<li>čisti raste više od jednostavnog: izloženost stilovima ili industrijama faktoru je odmagala.</li>
+</ul>
+<p>Kad je odabran indeks, obje linije procijenjene su samo na članovima tog indeksa. Za veličinske grupe prikazuju se linije cijelog univerzuma.</p>
+<h3 id="kako-čitati-razliku-prema-sortu">Kako čitati razliku prema sortu</h3>
+<ul>
+<li><strong>Sort t visok, FMP t nizak:</strong> zarada dolazi iz izloženosti stilovima ili industrijama, a ne iz samog signala.</li>
+<li><strong>Oba visoka:</strong> signal nosi vlastitu premiju.</li>
+<li><strong>FMP t suprotnog predznaka od sorta:</strong> nakon neutralizacije signal radi u obrnutom smjeru (npr. <code>PV_AMIHUD_ILLIQ_21D</code>: sort t 3,56, FMP t −2,47).</li>
+</ul>
+<p>FMP koristi puno više dionica s malim težinama i ima kraće i long i short pozicije u gotovo svakoj dionici, pa mu je turnover obično viši nego kod sorta.</p>
+<h3 id="uvjeti">Uvjeti</h3>
+<p>Najmanje 100 dionica u presjeku; nedostajući ciljni prinos računa se kao 0, a mjesec u kojem je prinos opažen za manje od polovice dionica se izostavlja; nedostajuća vrijednost stila zamjenjuje se nulom uz dodatnu dummy varijablu za nedostajanje.</p>
+<h3 id="kod-7">Kod</h3>
+<p><code>fit_cross_section_wls</code> i <code>design_matrix</code> u <code>R/barra.R:14</code>, mjesečna primjena u <code>scripts/build_barra_monthly.R</code> (<code>one_feature</code>):</p>
+<pre class="r"><code>w    &lt;- clip_weights(1 / x$return_variance, cfg)                 # W
+pure &lt;- fit_cross_section_wls(design_matrix(x, cfg, industries, candidate = x[[feature]],
+          canonical_remove = canonical), y, w, candidate_fmp = TRUE)
+
+# unutar fit_cross_section_wls:
+inv &lt;- chol2inv(chol(crossprod(Xa, w0 * Xa)))                    # (X&#39;WX)^-1
+h   &lt;- as.numeric(w0 * (Xa %*% (inv %*% target)))                # h = W X (X&#39;WX)^-1 e_c
+identity_error &lt;- crossprod(Xa, h) - target                      # provjera X&#39;h = e_c
+
+portfolio_return &lt;- 2 * sum(h * pure$y) / sum(abs(h))            # $1 long / $1 short</code></pre>
+<p>Stupac „t 1 dan&quot; na stranici je stariji, dnevni Barra screen (regresija na prinos sljedećeg dana). Zadržan je samo za usporedbu i u novim rezultatima je prazan.</p>
+<hr />
+<h2 id="11-ostale-statistike-u-sažetku">11. Ostale statistike u sažetku</h2>
+<p>Ove veličine su u <code>alpha_summary.csv</code> i na detaljnoj stranici faktora, ali ne u glavnoj tablici.</p>
+<p><strong>Monotonost.</strong> Pearsonova korelacija između rednog broja grupe (1, 2, 3) i prinosa grupe u tom mjesecu, poravnata po smjeru i uprosječena kroz mjesece. Vrijednost blizu 1 znači da prinos pravilno raste od donje prema gornjoj grupi; blizu 0 da zaradu nosi samo jedan kraj. S tri grupe mjera je gruba, korisnija je na decilima.</p>
+<p><strong>CAPM alfa.</strong> Regresija mjesečnog prinosa faktora na tržišni višak prinosa (Fama–French <code>MKT_RF</code>, složen na mjesec držanja):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mo>=</mo><mi>α</mi><mo>+</mo><mi>β</mi><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">MKT</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>u</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">
+f_t = \alpha + \beta\, \text{MKT}_t + u_t
+</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> je prosječni prinos nakon uklanjanja tržišne izloženosti, s Newey–West t (lag 6). Long-short portfelj je dolarski neutralan, ali ne nužno beta-neutralan, pa CAPM alfa hvata slučaj kad faktor zarađuje samo zato što je long visoku betu.</p>
+<p><strong>Efektivni broj dionica.</strong></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mtext mathvariant="normal">eff</mtext></msub><mo>=</mo><mfrac><mn>1</mn><mrow><munder><mo>∑</mo><mi>i</mi></munder><msubsup><mover><mi>w</mi><mo accent="true">̃</mo></mover><mi>i</mi><mrow><mspace width="0.167em"></mspace><mn>2</mn></mrow></msubsup></mrow></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msub><mover><mi>w</mi><mo accent="true">̃</mo></mover><mi>i</mi></msub><mo>=</mo><mfrac><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>w</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow><mrow><munder><mo>∑</mo><mi>j</mi></munder><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>w</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+N_{\text{eff}} = \frac{1}{\sum_i \tilde w_i^{\,2}}, \qquad \tilde w_i = \frac{|w_i|}{\sum_j |w_j|}
+</annotation></semantics></math></p>
+<p>Jednak je stvarnom broju dionica kad su težine jednake, a puno manji kad nekoliko dionica nosi portfelj. Služi kao upozorenje na koncentraciju.</p>
+<p><strong>Empirical Bayes procjena.</strong> Unutar ekonomske obitelji faktora prosječni prinos svakog faktora „stisne&quot; se prema prosjeku obitelji:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>μ</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><mfrac><mrow><msub><mover><mi>f</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mi>/</mi><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup><mo>+</mo><mi>μ</mi><mi>/</mi><msup><mi>τ</mi><mn>2</mn></msup></mrow><mrow><mn>1</mn><mi>/</mi><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup><mo>+</mo><mn>1</mn><mi>/</mi><msup><mi>τ</mi><mn>2</mn></msup></mrow></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msup><mi>τ</mi><mn>2</mn></msup><mo>=</mo><mo>max</mo><mspace width="-0.167em"></mspace><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.222em"></mspace><mtext mathvariant="normal">Var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>f</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mover><msup><mi>s</mi><mn>2</mn></msup><mo accent="true">¯</mo></mover><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\hat\mu_i = \frac{\bar f_i / s_i^2 + \mu / \tau^2}{1/s_i^2 + 1/\tau^2}, \qquad
+\tau^2 = \max\!\big(0,\ \text{Var}(\bar f) - \overline{s^2}\big)
+</annotation></semantics></math></p>
+<p>gdje je <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mi>i</mi></msub><annotation encoding="application/x-tex">s_i</annotation></semantics></math> standardna pogreška faktora, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math> precizijom ponderirani prosjek obitelji i <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>τ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\tau^2</annotation></semantics></math> procijenjena stvarna varijanca među faktorima. Faktori s velikom standardnom pogreškom povlače se jače. Ideja je ista kao kod višestrukog testiranja: najbolji faktor u obitelji vjerojatno je dijelom imao i sreće. Kod: <code>empirical_bayes_normal</code>, <code>R/statistics.R:83</code>.</p>
+<p><strong>Podrazdoblja.</strong> Prosječni prinos u 2007–2014, 2015–2019 i 2020–2024. Faktor čija zarada dolazi iz samo jednog razdoblja treba čitati opreznije od onoga koji radi u sva tri.</p>
+<hr />
+<h2 id="12-filteri-razdoblje-veličina-univerzum">12. Filteri: razdoblje, veličina, univerzum</h2>
+<p>Kad se na stranici odabere filter, statistike se preračunavaju u pregledniku iz mjesečnih nizova, istim formulama. Potrebno je najmanje 12 mjeseci.</p>
+<p><strong>Razdoblje.</strong> Ista statistika na podskupu mjeseci.</p>
+<p><strong>Veličina.</strong> Grupe po NYSE percentilima kapitalizacije na datum formiranja:</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Grupa</th>
+<th>Granica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mega</td>
+<td>&gt; p80</td>
+</tr>
+<tr>
+<td>large</td>
+<td>p50 – p80</td>
+</tr>
+<tr>
+<td>small</td>
+<td>p20 – p50</td>
+</tr>
+<tr>
+<td>micro</td>
+<td>p01 – p20</td>
+</tr>
+<tr>
+<td>nano</td>
+<td>&lt; p01</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Univerzum.</strong> Članovi indeksa S&amp;P 500, Russell 1000, 2000 i 3000, prema sastavu ETF-ova SPY, IWB, IWM i IWV na datum formiranja (dostupno od lipnja 2009., podudaranje po tickeru).</p>
+<p>Kako se pojedina statistika računa unutar grupe:</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Statistika</th>
+<th>Unutar grupe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sort prinos, noge, turnover</td>
+<td>Za indeks s vlastitim izračunom (IWV u objavi od 19. studenoga 2026.) tercili se formiraju unutar indeksa. Za veličinske grupe i indekse bez vlastitog izračuna uzimaju se držanja tercilnog portfelja cijelog univerzuma koja pripadaju grupi. Obje noge ponovno se skaliraju na ±1, uz najmanje 5 dionica po nozi.</td>
+</tr>
+<tr>
+<td>Tržište za noge</td>
+<td>Vrijednosno ponderirani prinos dionica te grupe.</td>
+</tr>
+<tr>
+<td>IC i partial IC</td>
+<td>Ponovno izračunati samo na dionicama grupe (najmanje 20).</td>
+</tr>
+<tr>
+<td>Čisti FMP</td>
+<td>WLS regresija ponovno procijenjena samo na dionicama grupe (najmanje 100).</td>
+</tr>
+<tr>
+<td>Alfa ocjena, BH q, BY q</td>
+<td>Objavljene vrijednosti iz ocjenskog testa na Russellu 3000. Odabir filtra ih ne mijenja.</td>
+</tr>
+<tr>
+<td>FMB t</td>
+<td>Koristi ocjensko razdoblje. Za indeks s vlastitom Fama–MacBeth procjenom prikazuje se rezultat za taj indeks, inače rezultat cijelog univerzuma.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Posljedica dekompozicije: u grupi „mega&quot; long noga sadrži mega dionice koje su u gornjem tercilu <em>cijelog</em> univerzuma. Ako signal snažno korelira s veličinom, jedna noga unutar grupe može biti vrlo tanka ili prazna.</p>
+<hr />
+<h2 id="13-kako-čitati-statistike-zajedno">13. Kako čitati statistike zajedno</h2>
+<p>Svaki test ima drugu slabu točku, pa je slaganje više testova jači dokaz od jednog visokog broja.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Što pita</th>
+<th>Ponderiranje</th>
+<th>Glavna slabost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sort t</td>
+<td>Zarađuje li jednostavan portfelj?</td>
+<td>ograničeno vrijednosno</td>
+<td>Nosi izloženost drugim faktorima</td>
+</tr>
+<tr>
+<td>IC t</td>
+<td>Je li poredak dionica stabilno pogođen?</td>
+<td>jednako</td>
+<td>Dominiraju male dionice</td>
+</tr>
+<tr>
+<td>Partial IC t</td>
+<td>Isto, nakon stilova i industrije?</td>
+<td>jednako</td>
+<td>Dominiraju male dionice</td>
+</tr>
+<tr>
+<td>FMB t</td>
+<td>Kolika je premija po 1 sd signala?</td>
+<td>jednako</td>
+<td>Ekstremni prinosi, mikro dionice</td>
+</tr>
+<tr>
+<td>FMP t</td>
+<td>Zarađuje li signal sam, bez stilova i industrija?</td>
+<td>inverzna varijanca</td>
+<td>Viši turnover, ovisi o modelu</td>
+</tr>
+</tbody>
+</table></div>
+<p>Praktična pravila:</p>
+<ul>
+<li><strong>Sort t, partial IC t i FMP t svi iznad 3:</strong> najjači kandidati.</li>
+<li><strong>Visok sort t, nizak partial IC t i FMP t:</strong> vjerojatno prerušena poznata premija.</li>
+<li><strong>Dobar bruto, loš neto ili break-even ispod ~50 bps:</strong> signal postoji, ali ga troškovi pojedu; ima smisla samo kao dio kombinacije ili uz sporiji rebalans.</li>
+<li><strong>Zarada samo na short strani ili samo u micro/nano grupi:</strong> teško ostvarivo.</li>
+<li><strong>Radi u cijelom univerzumu, ali ne u S&amp;P 500 / Russell 1000:</strong> nije iskoristivo za strategiju s velikim kapitalom.</li>
+</ul>
+<p>Poznata ograničenja svih brojeva: univerzum je istraživački (bez revidiranih prinosa pri delistiranju), sastav indeksa podudara se po tickeru, troškovi su pojednostavljeni, a registar sadrži puno bliskih varijanti istog signala.</p>
+<hr />
+<h2 id="14-stupac--statistika--kod">14. Stupac → statistika → kod</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Stupac na stranici</th>
+<th>Statistika</th>
+<th>Kod</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prinos mj.</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>f</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar f</annotation></semantics></math> JKP tercilnog sorta</td>
+<td><code>sort_one_date</code>, <code>R/alpha.R:64</code></td>
+</tr>
+<tr>
+<td>HAC t</td>
+<td>Newey–West t, lag 6</td>
+<td><code>hac_mean_values</code>, <code>R/statistics.R:1</code></td>
+</tr>
+<tr>
+<td>Sharpe</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><mn>12</mn></msqrt><mspace width="0.167em"></mspace><mover><mi>f</mi><mo accent="true">‾</mo></mover><mi>/</mi><mi>σ</mi></mrow><annotation encoding="application/x-tex">\sqrt{12}\,\bar f/\sigma</annotation></semantics></math></td>
+<td><code>summarise_alpha</code>, <code>R/alpha.R:534</code></td>
+</tr>
+<tr>
+<td>Mj.</td>
+<td>broj mjeseci u uzorku</td>
+<td>isto</td>
+</tr>
+<tr>
+<td>Turnover</td>
+<td>prosječni turnover s driftom</td>
+<td><code>compute_turnover_drift</code>, <code>R/alpha_frequency.R:125</code></td>
+</tr>
+<tr>
+<td>Neto 25 bps</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">‾</mo></mover><mo>−</mo><mn>0</mn><mo>,</mo><mn>0025</mn><mo>⋅</mo><mover><mtext mathvariant="normal">TO</mtext><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">\bar f - 0{,}0025 \cdot \overline{\text{TO}}</annotation></semantics></math></td>
+<td><code>R/alpha.R:483</code></td>
+</tr>
+<tr>
+<td>BH q, BY q</td>
+<td>korigirane p-vrijednosti</td>
+<td><code>apply_by_correction</code>, <code>R/statistics.R:72</code></td>
+</tr>
+<tr>
+<td>Alpha (ocjena)</td>
+<td>pravilo A–D</td>
+<td><code>R/alpha.R:594</code></td>
+</tr>
+<tr>
+<td>IC t, Partial IC t</td>
+<td>HAC t mjesečnog (partial) IC-a</td>
+<td><code>compute_ics</code>, <code>R/alpha.R:274</code></td>
+</tr>
+<tr>
+<td>FMB t</td>
+<td>HAC t mjesečnog koeficijenta</td>
+<td><code>fama_macbeth</code>, <code>R/alpha.R:206</code></td>
+</tr>
+<tr>
+<td>Prinos noge, Višak nad tržištem</td>
+<td>rastav na long i short stranu</td>
+<td><code>scripts/build_size_group_returns.R</code>, <code>scripts/build_market_return.R</code></td>
+</tr>
+<tr>
+<td>Barra: Prinos mj., HAC t, Sharpe, Turnover, Neto</td>
+<td>čisti FMP, 1 USD long / 1 USD short</td>
+<td><code>scripts/build_barra_monthly.R</code>, <code>R/barra.R:65</code></td>
+</tr>
+<tr>
+<td>Statistike uz filter</td>
+<td>iste formule u pregledniku</td>
+<td><code>hac</code>, <code>viewRow</code> u <code>reports/site/index.html</code></td>
+</tr>
+<tr>
+<td>Grupa, Razina</td>
+<td>klasteri sličnih faktora i njihovi kompoziti</td>
+<td><code>scripts/build_factor_clusters.R</code>, <code>scripts/build_cluster_composites.R</code></td>
+</tr>
+<tr>
+<td>RW p</td>
+<td>Romano–Wolf step-down p</td>
+<td><code>romano_wolf</code> u <code>scripts/build_factor_site.R</code></td>
+</tr>
+<tr>
+<td>FF6 α t</td>
+<td>alfa prema FF5 + momentum</td>
+<td><code>spanning</code> u <code>scripts/build_factor_site.R</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="15-grupe-sličnih-faktora-kompoziti-i-romanowolf-p">15. Grupe sličnih faktora, kompoziti i Romano–Wolf p</h2>
+<p><strong>Zašto.</strong> Registar sadrži puno bliskih varijanti istog signala (isti omjer s različitim prozorima, ista mjera iz dva izvora). Svaka varijanta je zaseban test, pa korekcija za višestruko testiranje plaća cijenu za testove koji ne nose novu informaciju. Grupiranje svodi obitelj testova na broj stvarno različitih signala.</p>
+<p><strong>Grupe.</strong> Za svaki par faktora računa se Pearsonova korelacija mjesečnih sort prinosa u cijelom univerzumu, u trgovanom smjeru, samo na mjesecima do 31. 12. 2014. (najmanje 36 zajedničkih mjeseci; inače se korelacija uzima kao 0). Na udaljenosti <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi></mrow><annotation encoding="application/x-tex">1-\rho</annotation></semantics></math> radi se hijerarhijsko klasteriranje s prosječnom vezom, a stablo se reže na <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>90</mn></mrow><annotation encoding="application/x-tex">\rho = 0{,}90</annotation></semantics></math>. Faktor koji nije sličan nijednom drugom ostaje sam u svojoj grupi. Grupe su iste u svim univerzumima. Budući da se određuju prije 2015., grupiranje ne vidi prinose na kojima se faktori ocjenjuju.</p>
+<p><strong>Kompozit grupe.</strong> Za grupu s najmanje dva člana gradi se jedan signal u stilu Barra deskriptora: svaka karakteristika člana pretvara se na zadnjoj sjednici mjeseca u normalnu vrijednost ranga u presjeku, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo>=</mo><msup><mi>Φ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">rang</mtext><mo>−</mo><mn>0</mn><mo>,</mo><mn>5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mi>N</mi><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z = \Phi^{-1}\big((\text{rang}-0{,}5)/N\big)</annotation></semantics></math>, množi s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">+1</annotation></semantics></math> ili <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">-1</annotation></semantics></math> prema trgovanom smjeru člana, a kompozit je prosjek dostupnih <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math> vrijednosti. Dionica mora imati barem polovicu članova grupe. Kompozit (skup podataka <code>cluster_composite</code>, naziv <code>GRP_C###_&lt;oznaka&gt;</code>) zatim prolazi isti postupak kao svaki faktor: sort, IC, Fama–MacBeth, CAPM i čisti FMP, u cijelom univerzumu i unutar svakog indeksa. Njegov ocjenski uzorak počinje</p>
+<ol type="1">
+<li><ol type="1">
+<li>2015., jer su i grupe i smjerovi članova određeni na ranijim podacima.</li>
+</ol></li>
+</ol>
+<p><strong>Dvije razine testiranja.</strong> Filter <em>Razina</em> bira obitelj testova:</p>
+<ul>
+<li><em>Pojedinačni faktori</em>: svaki faktor je jedan test (kompoziti nisu u obitelji).</li>
+<li><em>Grupe</em>: jedan test po grupi, tj. kompozit grupe s više članova, odnosno sam faktor ako je jedini u grupi. BH q, BY q, RW p i ocjena računaju se unutar te manje obitelji.</li>
+</ul>
+<p><strong>Romano–Wolf p.</strong> BH q kontrolira udio lažnih otkrića (FDR) i gotovo je neosjetljiv na korelaciju među testovima. Romano–Wolf step-down postupak kontrolira vjerojatnost ijednog lažnog otkrića (FWER) i pritom koristi stvarnu zavisnost faktora: mjeseci se uzorkuju u kružnim blokovima od 6, zajednički za sve serije obitelji (2000 ponavljanja), na centriranim prinosima. Za faktor <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> poredan po padajućem <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>, p-vrijednost je udio ponavljanja u kojima najveći bootstrap <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> među faktorom <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> i svim slabijima dosegne opaženi <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>i</mi></msub><annotation encoding="application/x-tex">t_i</annotation></semantics></math>, uz monotonost niz poredak. Test je jednostran (prosjek &gt; 0 u trgovanom smjeru). RW p je stroži od BH q i ne ulazi u ocjenu; faktor s RW p ≤ 0,10 preživljava i najstroži prikazani kriterij.</p>
+<h2 id="16-alfa-prema-famafrench-pet-faktora-i-momentumu-ff6-α">16. Alfa prema Fama–French pet faktora i momentumu (FF6 α)</h2>
+<p><strong>Intuicija.</strong> Čisti FMP uklanja poznate izvore u presjeku dionica. Druga, neovisna provjera radi se na vremenskoj seriji: može li se mjesečni prinos faktora objasniti prinosima šest javnih faktora? Ako može, faktor je prepakirana poznata premija.</p>
+<p><strong>Algebra.</strong> Za svaki faktor, na ocjenskom uzorku:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mo>=</mo><mi>α</mi><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">MKT</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mn>2</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">SMB</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mn>3</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">HML</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mn>4</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">RMW</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mn>5</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">CMA</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>b</mi><mn>6</mn></msub><mspace width="0.167em"></mspace><msub><mtext mathvariant="normal">MOM</mtext><mi>t</mi></msub><mo>+</mo><msub><mi>e</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">
+f_t = \alpha + b_1\,\text{MKT}_t + b_2\,\text{SMB}_t + b_3\,\text{HML}_t + b_4\,\text{RMW}_t
++ b_5\,\text{CMA}_t + b_6\,\text{MOM}_t + e_t
+</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mi>t</mi></msub><annotation encoding="application/x-tex">f_t</annotation></semantics></math> je long-short prinos sorta (stupac <strong>FF6 α t</strong> u skupini <em>IC i regresija</em>) ili prinos čistog FMP-a (stupac u skupini <em>Barra</em>). Faktori su iz knjižnice Kennetha Frencha, dnevni prinosi složeni u mjesece. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> je mjesečni prinos koji šest faktora ne objašnjava; t-statistika koristi Newey–West standardnu pogrešku s 6 lagova. Potrebno je najmanje 36 mjeseci. Vrijednosti postoje za cijeli univerzum i za svaki indeks, uvijek na ocjenskom uzorku faktora. Kod: <code>spanning</code> u <code>scripts/build_factor_site.R</code>.</p>
+<p><strong>Kako čitati.</strong> Visok HAC t sorta uz FF6 α t blizu nule znači da faktor zarađuje, ali preko poznatih premija. Visok FF6 α t uz nizak R² znači prinos koji se s poznatim faktorima gotovo ne kreće zajedno. FF6 α nije ušao u ocjenu A–D.</p>
+<h2 id="17-identitet-izračuna-i-raspored-uzoraka">17. Identitet izračuna i raspored uzoraka</h2>
+<p><strong>Identitet izračuna.</strong> Svaki spremljeni rezultat nosi <code>config_hash</code>. On se računa iz konfiguracije, iz koda (<code>R/*.R</code>, <code>run_pipeline.R</code>, dvije CSV datoteke s postavkama) i, od metodologije 1.2.0, iz otiska svih ulaznih datoteka (putanja, veličina i vrijeme izmjene svake Parquet datoteke koju run čita). Zamjena ulazne datoteke novom verzijom zato mijenja hash, pa se stari rezultati više ne prihvaćaju kao aktualni.</p>
+<p><strong>Raspored uzoraka.</strong></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Razdoblje</th>
+<th>Uloga</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>do 31. 12. 2014.</td>
+<td>učenje smjera faktora i određivanje grupa sličnih faktora</td>
+</tr>
+<tr>
+<td>2015.–2024.</td>
+<td>ocjenski uzorak: primarni test i sve statistike na stranici</td>
+</tr>
+<tr>
+<td>od 2025.</td>
+<td>netaknuti uzorak; ne čita se dok se postupak provjere ne zaključa</td>
+</tr>
+</tbody>
+</table></div>
+<p>Razdoblje 2015.–2024. nije potpuno neovisan test: na njemu su birani univerzum ocjene, način grupiranja i konstrukcija portfelja, a dio faktora iz literature objavljen je nakon 2014. Zato primarni test ostaje unaprijed zadan (sort unutar Russell 3000, JKP tercili s ograničenim vrijednosnim ponderima, BH q ≤ 0,10 uz t ≥ 2), a prikazi po drugim univerzumima i metodama služe istraživanju. Završna provjera kandidata radi se jednom, na podacima od 2025.</p>
+<p><strong>Promjene u metodologiji 1.2.0</strong> (studeni 2026.): primarni prinos od otvaranja do otvaranja; razdoblja bez opaženog prinosa više nemaju prinos 0; tri Fama–French stila (vrijednost, profitabilnost, investicije) dodana u čisti FMP i partial IC; otisak ulaznih datoteka u identitetu izračuna; FF6 α; tjedni kalendar na prijelazu godine; stroža provjera statusa univerzuma; popisi u konfiguraciji zamjenjuju zadane popise.</p>
+<h2 id="18-tijek-izračuna-i-provjere-osjetljivosti">18. Tijek izračuna i provjere osjetljivosti</h2>
+<h3 id="tijek-izračuna">Tijek izračuna</h3>
+<p>Svi rezultati na stranici nastaju jednim lancem koraka (<code>scripts/run_full_rerun.sh</code>). Svaki korak čita rezultate prethodnih, pa promjena metodologije znači ponavljanje cijelog lanca. Zadnji puni izračun (metodologija 1.2.0) trajao je 33 sata, 22.–23. 11. 2026.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Korak</th>
+<th>Što računa</th>
+<th>Odjeljak</th>
+<th>Skripta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Glavni izračun</td>
+<td>za svaki faktor na cijelom univerzumu: sort u tercile, IC, partial IC, Fama–MacBeth</td>
+<td>2–9</td>
+<td><code>scripts/run_parallel_registry.R</code></td>
+</tr>
+<tr>
+<td>2. Statistike po grupama</td>
+<td>razlaganje portfelja po veličinskim grupama i indeksima, tržišni prinosi, mjesečni čisti FMP i IC po grupi</td>
+<td>10, 12</td>
+<td><code>scripts/run_group_statistics.sh</code></td>
+</tr>
+<tr>
+<td>3. Izračuni unutar indeksa</td>
+<td>korak 1 ponovljen samo na članovima Russell 3000, S&amp;P 500, Russell 1000 i Russell 2000</td>
+<td>12</td>
+<td><code>scripts/run_index_universes.sh</code></td>
+</tr>
+<tr>
+<td>4. Čisti FMP unutar indeksa</td>
+<td>Barra regresija na članovima svakog indeksa</td>
+<td>10</td>
+<td><code>scripts/run_index_barra.sh</code></td>
+</tr>
+<tr>
+<td>5. Grupe sličnih faktora</td>
+<td>grupiranje po korelaciji prinosa do 2014. i izrada kompozitnih signala</td>
+<td>15</td>
+<td><code>scripts/build_factor_clusters.R</code>, <code>scripts/build_cluster_composites.R</code></td>
+</tr>
+<tr>
+<td>6. Kompoziti</td>
+<td>koraci 1–4 za kompozite, na cijelom univerzumu i u četiri indeksa</td>
+<td>15</td>
+<td><code>scripts/run_composites.sh</code></td>
+</tr>
+<tr>
+<td>7. Veličinske grupe kompozita</td>
+<td>razlaganje kompozita po veličini</td>
+<td>12, 15</td>
+<td><code>scripts/run_composite_size_groups.sh</code></td>
+</tr>
+<tr>
+<td>8. Run bez zaštite cijene otvaranja</td>
+<td>dio faktora ponovljen bez zamjene očito pogrešnih cijena otvaranja</td>
+<td>2</td>
+<td><code>config/sens_raw_open.yml</code></td>
+</tr>
+<tr>
+<td>9. Analiza osjetljivosti</td>
+<td>usporedbe opisane niže</td>
+<td>18</td>
+<td><code>scripts/analyze_sensitivity.R</code></td>
+</tr>
+<tr>
+<td>10. Stranica</td>
+<td>BH, BY i Romano–Wolf korekcije, ocjene, FF6 α, datoteke stranice</td>
+<td>5, 15, 16</td>
+<td><code>scripts/build_factor_site.R</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Ocjene A–D računaju se tek u koraku 10, iz sorta unutar Russell 3000 (korak 3) na ocjenskom uzorku 2015.–2024. Glavni izračun (korak 1) daje rezultate za cijeli univerzum i smjer trgovanja faktora, naučen na podacima do 2014.</p>
+<p>Izračun sprema rezultat nakon svakog faktora i nastavlja od zadnjeg spremljenog ako se prekine. Broj paralelnih procesa ne ulazi u identitet izračuna.</p>
+<h3 id="provjere-osjetljivosti">Provjere osjetljivosti</h3>
+<p>Tri izbora nisu dio signala, a mogli bi utjecati na rezultat. Za svaki je izmjereno koliko mijenja prosječni prinos i t faktora (cijeli univerzum, ocjenski uzorak, 920 faktora).</p>
+<p><strong>Definicija prinosa.</strong> Uz primarnu definiciju (otvaranje do otvaranja) spremaju se još dvije.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Definicija</th>
+<th>Razlika prosječnog prinosa prema primarnoj</th>
+<th>Korelacija t</th>
+<th>Faktora s t &gt; 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>otvaranje do otvaranja (primarna)</td>
+<td>–</td>
+<td>–</td>
+<td>67</td>
+</tr>
+<tr>
+<td>otvaranje do zadnjeg zatvaranja</td>
+<td>+2,6 bps mjesečno</td>
+<td>0,977</td>
+<td>57</td>
+</tr>
+<tr>
+<td>zatvaranje do zatvaranja</td>
+<td>+0,1 bps mjesečno</td>
+<td>0,994</td>
+<td>67</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Dionice bez opaženog prinosa.</strong> U prosjeku 0,36 % apsolutne težine portfelja nema opažen prinos (90. percentil po faktorima 0,48 %, najviše 0,83 %). U rezultatima te dionice imaju prinos 0. Ako im se umjesto toga pripiše gubitak od 30 %, korelacija t s osnovnim rezultatom je 0,989, a prosječni prinos faktora viši za 0,3 bps mjesečno. Uz gubitak od 100 % korelacija je 0,911, a broj faktora s t &gt; 2 raste sa 67 na 103, jer su te dionice pretežno na short strani. Pretpostavka nultog prinosa zato ne uljepšava rezultate.</p>
+<p><strong>Zaštita cijene otvaranja.</strong> Na 141 faktoru izračun je ponovljen bez zamjene očito pogrešnih otvaranja. Korelacija t je 0,995, a prosječni prinos niži za 0,5 bps mjesečno. Najveći mjesečni prinos jednog faktora bez zaštite je 129 %, a sa zaštitom 28,5 %: zaštita uklanja pojedinačne pogrešne cijene, a ne mijenja zaključke.</p>
+<p>Kod: <code>scripts/analyze_sensitivity.R</code>; rezultati po faktoru su u mapi <code>sensitivity</code> izlaznog direktorija.</p>
+<h2 id="literatura">Literatura</h2>
+<ul>
+<li>Benjamini, Y. i Hochberg, Y. (1995). Controlling the false discovery rate. <em>JRSS B</em>.</li>
+<li>Benjamini, Y. i Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. <em>Annals of Statistics</em>.</li>
+<li>Chen, A. Y. i Zimmermann, T. (2022). Open source cross-sectional asset pricing. <em>Critical Finance Review</em>.</li>
+<li>Carhart, M. M. (1997). On persistence in mutual fund performance. <em>Journal of Finance</em>.</li>
+<li>Fama, E. F. i French, K. R. (2015). A five-factor asset pricing model. <em>JFE</em>.</li>
+<li>Fama, E. F. i MacBeth, J. D. (1973). Risk, return, and equilibrium. <em>JPE</em>.</li>
+<li>Harvey, C. R., Liu, Y. i Zhu, H. (2016). … and the cross-section of expected returns. <em>RFS</em>.</li>
+<li>Jensen, T. I., Kelly, B. i Pedersen, L. H. (2023). Is there a replication crisis in finance? <em>Journal of Finance</em>.</li>
+<li>Romano, J. P. i Wolf, M. (2005). Stepwise multiple testing as formalized data snooping. <em>Econometrica</em>.</li>
+<li>Newey, W. K. i West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. <em>Econometrica</em>.</li>
+</ul>
+</article></main>
+<script>
+const contents = document.querySelector('.guide-contents');
+const narrow = matchMedia('(max-width: 850px)');
+function setLayout() { contents.open = !narrow.matches; }
+setLayout();
+narrow.addEventListener('change', setLayout);
+contents.querySelector('nav').addEventListener('click', event => {
+  if (narrow.matches && event.target.closest('a')) contents.open = false;
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && narrow.matches && contents.open) {
+    contents.open = false;
+    contents.querySelector('summary').focus();
+  }
+});
+</script>
+</body>
+</html>
